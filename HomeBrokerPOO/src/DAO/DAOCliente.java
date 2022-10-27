@@ -65,28 +65,30 @@ public class DAOCliente {
         comum2.setCpf("24520690005");
         comum2.setEndereco("Se essa rua fosse minha, 450");
         comum2.setLogin("comum2");
-        comum2.setNome("Jojo Todyson");
+        comum2.setNome("MC Carol");
         comum2.setTelefone("84933821382");
         comum2.setSenha("321");
         comum2.setTipoUsuario(Usuario.COMUM);
         comum2.setConta(conta2);
         conta2.setCliente(comum2);
         
-        //Conta conta3 = new Conta();
+        Conta conta3 = new Conta();
         Cliente comum3 = new Cliente();
         comum3.setCpf("4123");
         comum3.setEndereco("Se essa rua fsosse minha, 450");
         comum3.setLogin("comum3");
-        comum3.setNome("Jojo Todyson");
+        comum3.setNome("Roberto Carlos");
         comum3.setTelefone("84933821382");
         comum3.setSenha("321");
         comum3.setTipoUsuario(Usuario.COMUM);
-        //comum3.setConta(conta3);
-        //conta3.setCliente(comum3);
+        comum3.setConta(conta3);
+        conta3.setCliente(comum3);
         
         vetorComum[0] = comum1;
         vetorComum[1] = comum2;
         vetorComum[2] = comum3;
+        
+        
     }
 
     public Cliente[] getVetorAdm() {
@@ -98,7 +100,11 @@ public class DAOCliente {
     }
     
     public Cliente validarLogin(String[] loginSenha){
-        
+        for(int i = 0; i < vetorAdm.length; i++){
+            if(vetorAdm[i] != null){
+                System.out.println(vetorAdm[i]);
+            }
+        }
         for(int i = 0; i < vetorComum.length; i++){
             if(vetorComum[i] != null){
                 System.out.println(vetorComum[i]);
