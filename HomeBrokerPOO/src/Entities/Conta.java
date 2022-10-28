@@ -19,16 +19,19 @@ public class Conta {
     private int id;
     private BigDecimal saldo = BigDecimal.valueOf(0.00);
     private Ativos[] ativos = new Ativos[10];
+    private int[] totalAtivosConta = new int[10];
     private Cliente cliente;
     private Date dataCriacao;
     private Date dataModificacao;
     
     public Conta(Cliente cliente){
+        
         this.setCliente(cliente);
+        
         BigDecimal depositoGratis = BigDecimal.valueOf(0.00);
         if(this.cliente.getTipoUsuario().equals(Usuario.COMUM)){
             depositoGratis = new BigDecimal("20000");
-        }else if(this.cliente.getTipoUsuario() == Usuario.BOLSA){
+        }else if(this.cliente.getTipoUsuario().equals(Usuario.BOLSA)){
             depositoGratis = new BigDecimal("500000");
         }
         

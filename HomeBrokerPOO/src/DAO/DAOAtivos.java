@@ -14,36 +14,41 @@ import java.math.BigDecimal;
  */
 public class DAOAtivos {
     
-    private Ativos[] ativos = new Ativos[5];
+    private Object[][] ativos = new Object[5][2];
     
     public DAOAtivos(){
+        
+        
         Ativos ativo1 = new Ativos();
         ativo1.setNomeEmpresa("João Pedro & Paulo");
         ativo1.setTicker("JPP");
-        ativo1.setTotalAtivos(5);
+        //ativo1.setTotalAtivos(5);
         ativo1.setPrecoInicial(new BigDecimal("50"));
         ativo1.setPrecoUltimaVenda(new BigDecimal("50"));
         
         Ativos ativo2 = new Ativos();
         ativo2.setNomeEmpresa("Magalu");
         ativo2.setTicker("MAG");
-        ativo2.setTotalAtivos(5);
+        //ativo2.setTotalAtivos(5);
         ativo2.setPrecoInicial(new BigDecimal("50"));
         ativo2.setPrecoUltimaVenda(new BigDecimal("50"));
         
         Ativos ativo3 = new Ativos();
         ativo3.setNomeEmpresa("Only fans");
         ativo3.setTicker("ONF");
-        ativo3.setTotalAtivos(5);
+        //ativo3.setTotalAtivos(5);
         ativo3.setPrecoInicial(new BigDecimal("50"));
         ativo3.setPrecoUltimaVenda(new BigDecimal("50"));
         
-        ativos[0] = ativo1;
-        ativos[1] = ativo2;
-        ativos[2] = ativo3;
+        ativos[0][0] = ativo1;
+        ativos[0][1] = 5;
+        ativos[1][0] = ativo2;
+        ativos[1][1] = 5;
+        ativos[2][0] = ativo3;
+        ativos[2][0] = 5;
     }
 
-    public Ativos[] getAtivos() {
+    public Object[][] getAtivos() {
         return ativos;
     }
     
@@ -52,13 +57,14 @@ public class DAOAtivos {
         
         ativo.setNomeEmpresa(nomeEmpresa);
         ativo.setTicker(ticker);
-        ativo.setTotalAtivos(totalAtivos);
+        //ativo.setTotalAtivos(totalAtivos);
         ativo.setPrecoInicial(precoInicial);
         ativo.setPrecoUltimaVenda(precoInicial);
         
         for(int i = 0; i < ativos.length; i++){
             if(ativos[i] == null){
-                ativos[i] = ativo;
+                ativos[i][0] = ativo;
+                ativos[i][1] = totalAtivos;
                 break;
             }
         }

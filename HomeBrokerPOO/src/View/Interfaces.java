@@ -135,8 +135,7 @@ public class Interfaces {
         builder.append("HOME BROKER JJ");
         builder.append("\nConta criada com sucesso");
         
-        Conta conta = new Conta(cliente);
-        cliente.setConta(conta);
+        daoConta.criarConta(cliente, daoCliente.getBolsa());
         
         JOptionPane.showMessageDialog (null, builder);
     }
@@ -349,7 +348,8 @@ public class Interfaces {
     }
     
     public void venderAtivo(Cliente cliente){
-        Ativos[] vetorAtivos = daoAtivos.getAtivos();
+        Object[][] objetoAtivos = daoAtivos.getAtivos();
+        Ativos[] vetorAtivos = (Ativos[]) objetoAtivos[0];
         Ativos ativoEscolhido = null;
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
@@ -379,7 +379,8 @@ public class Interfaces {
     }
     // Book de ofertas
     public void bookOfertas(Cliente cliente){
-        Ativos[] vetorAtivos = daoAtivos.getAtivos();
+        Object[][] objetoAtivos = daoAtivos.getAtivos();
+        Ativos[] vetorAtivos = (Ativos[]) objetoAtivos[0];
         Ativos ativoEscolhido = null;
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
