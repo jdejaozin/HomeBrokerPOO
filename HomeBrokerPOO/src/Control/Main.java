@@ -101,15 +101,18 @@ public class Main {
                                             break;
                                         }
                                         case 5:{
-                                            GUI.comprarAtivos(cliente);
+                                            GUI.meusAtivos(cliente);
                                             break;
                                         }
                                         case 6:{
-                                            //FALTA TERMINAR
-                                            GUI.gerarExtrato(cliente);
+                                            GUI.bookOfertas(cliente);
                                             break;
                                         }
                                         case 7:{
+                                            GUI.gerarExtrato(cliente);
+                                            break;
+                                        }
+                                        case 8:{
                                             break;
                                         }
                                         default: {
@@ -117,7 +120,7 @@ public class Main {
                                             break;
                                         }
                                     }
-                                }while(opComum != 7);
+                                }while(opComum != 8);
                             }
                         }
 

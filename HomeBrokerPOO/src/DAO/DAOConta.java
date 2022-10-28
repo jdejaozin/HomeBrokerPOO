@@ -38,15 +38,34 @@ public class DAOConta {
         
         cliente.getConta().setSaldo(cliente.getConta().getSaldo().subtract(valor));
         
-        ativo.setTotalAtivos(ativo.getTotalAtivos() - Integer.parseInt(numAtivos));
+        cliente.getConta().setAtivos(ativo);
+
     }
     
-    public void venderAtivos(Cliente cliente, BigDecimal valor){
-        cliente.getConta().setSaldo(cliente.getConta().getSaldo().subtract(valor));
+    public void venderAtivos(Cliente cliente, BigDecimal novoValor, Ativos ativoEscolhido){
+        for(int i = 0; i < cliente.getConta().getAtivos().length; i++){
+            if(cliente.getConta().getAtivos()[i] != null){
+                if(cliente.getConta().getAtivos()[i].getId() == ativoEscolhido.getId()){
+                    cliente.getConta().getAtivos()[i] = null;
+                    ativoEscolhido.setPrecoUltimaVenda(novoValor);
+                    cliente.getConta().setSaldo(cliente.getConta().getSaldo().add(novoValor));
+                }
+            }
+        }
     }
     
-    public void pagarDividendos(Cliente cliente){
-        
+    public void pagarDividendos(Cliente[] cliente){
+        for(Cliente temp : cliente){
+            if(temp != null){
+                if(temp.getConta().getAtivos() != null){
+                    for(int i = 0; i < temp.getConta().getAtivos().length; i++){
+                        if(temp.getConta().getAtivos()[i] != null){
+                            temp.getConta().setSaldo(temp.getConta().getSaldo().add(temp.getConta().getAtivos()[i].getPrecoUltimaVenda()));
+                        }
+                    }
+                }
+            }
+        }
     }  
     
 }

@@ -9,7 +9,9 @@ package Entities.Enum;
  *
  * @author jp_te
  */
+// criei um tipo de usuário pra bolsa
 public enum Usuario {
     COMUM,
-    ADM
+    ADM,
+    BOLSA
 }

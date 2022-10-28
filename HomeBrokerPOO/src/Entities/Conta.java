@@ -5,6 +5,7 @@
  */
 package Entities;
 
+import Entities.Enum.Usuario;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
@@ -17,12 +18,20 @@ public class Conta {
     private static int nextId;
     private int id;
     private BigDecimal saldo = BigDecimal.valueOf(0.00);
+    private Ativos[] ativos = new Ativos[10];
     private Cliente cliente;
     private Date dataCriacao;
     private Date dataModificacao;
     
-    public Conta(){
-        BigDecimal depositoGratis = new BigDecimal("20000");
+    public Conta(Cliente cliente){
+        this.setCliente(cliente);
+        BigDecimal depositoGratis = BigDecimal.valueOf(0.00);
+        if(this.cliente.getTipoUsuario().equals(Usuario.COMUM)){
+            depositoGratis = new BigDecimal("20000");
+        }else if(this.cliente.getTipoUsuario() == Usuario.BOLSA){
+            depositoGratis = new BigDecimal("500000");
+        }
+        
         this.id = nextId++;
         this.dataCriacao = new Date();
         this.dataModificacao = new Date();
@@ -44,6 +53,10 @@ public class Conta {
     public Date getDataModificacao(){
         return dataModificacao;
     }
+    public Ativos[] getAtivos() {
+        return ativos;
+    }
+    
     
     public void setSaldo(BigDecimal saldo){
         this.saldo = saldo;
@@ -60,6 +73,20 @@ public class Conta {
     private void setDataModificacao(Date dataModificacao){
         this.dataModificacao = dataModificacao;
     }
+
+    public void setAtivos(Ativos ativos) {
+        this.ativos[novaPosicao()] = ativos;
+    }
+    
+    public int novaPosicao(){
+        for(int i = 0; i < ativos.length; i++){
+            if(ativos[i] == null){
+                return i;
+            }
+        }
+        return -1;
+    }
+    
     
     //O custo de manutenção será de R$20,00 e será debitado todo dia 15.
 

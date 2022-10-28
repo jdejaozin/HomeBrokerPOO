@@ -18,6 +18,7 @@ public class Ativos {
     private int id;
     private int totalAtivos;
     private BigDecimal precoInicial;
+    private BigDecimal precoUltimaVenda;
     private String nomeEmpresa;
     private String ticker;
     private Date dataCriacao;
@@ -49,6 +50,10 @@ public class Ativos {
     public Date getDataModificacao(){
         return dataModificacao;
     }
+
+    public BigDecimal getPrecoUltimaVenda() {
+        return precoUltimaVenda;
+    }
     
 
     public void setTotalAtivos(int totalAtivos){
@@ -74,6 +79,11 @@ public class Ativos {
     public void setDataModificacao(Date dataModificacao){
         this.dataModificacao = dataModificacao;
     }
+
+    public void setPrecoUltimaVenda(BigDecimal precoUltimaVenda) {
+        this.precoUltimaVenda = precoUltimaVenda;
+    }
+    
 
     @Override
     public int hashCode() {
@@ -119,6 +129,10 @@ public class Ativos {
 
     @Override
     public String toString() {
-        return "Id do ativo = " + id + "\nEmpresa = " + nomeEmpresa + "\nTicker = " + ticker + "\nPreço = " + precoInicial + "\nTotal de ativos disponíveis = " + totalAtivos;
+        return "Id do ativo = " + id + 
+                "\nEmpresa = " + nomeEmpresa + 
+                "\nTicker = " + ticker + 
+                "\nPreço = " + precoUltimaVenda + 
+                "\nTotal de ativos disponíveis = " + totalAtivos;
     }
 }

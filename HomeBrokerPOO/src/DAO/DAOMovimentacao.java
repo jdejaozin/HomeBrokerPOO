@@ -27,6 +27,15 @@ public class DAOMovimentacao {
         return true;
     }
     
+    public boolean temEspaco(){
+        for (Movimentacao temp : movimentacoes)
+            if(temp == null){
+                //Tava dando errado por causa dessa condição
+                return true;
+        }
+        return false;
+    }
+    
     public boolean vetCheio(){
         for (Movimentacao temp : movimentacoes)
             if(temp == null){
@@ -36,17 +45,17 @@ public class DAOMovimentacao {
     }
     
     public int proximaPosicaoLivre(){
-            for (int i = 0; i < movimentacoes.length; i++) {
-                if(movimentacoes[i] == null){
-                    return i;
-                }         
-            }
-            return -1;
+        for (int i = 0; i < movimentacoes.length; i++) {
+            if(movimentacoes[i] == null){
+                return i;
+            }         
+        }
+        return -1;
     }   
     
     public void criar(Movimentacao movimentacaoNova){
-        if(this.vetVazio()){
-            final int posLivre = this.proximaPosicaoLivre();
+        if(this.temEspaco()){
+            int posLivre = this.proximaPosicaoLivre();
             movimentacoes[posLivre] = movimentacaoNova;
         }
     }
@@ -64,10 +73,9 @@ public class DAOMovimentacao {
                     }
                 }
             }
-            System.out.println(resultado);
             return resultado;
         } else {
-            resultado.append("Nenhuma operacao realizada");
+            resultado.append("\nNenhuma operacao realizada");
             return resultado;
         }
     }   

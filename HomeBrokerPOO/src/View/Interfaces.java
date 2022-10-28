@@ -89,9 +89,10 @@ public class Interfaces {
                 builder.append("\n2- Saque");
                 builder.append("\n3- Pagamento");
                 builder.append("\n4- Transferência");
-                builder.append("\n5- Abrir book de ofertas");
-                builder.append("\n6- Extrato");
-                builder.append("\n7- Sair");
+                builder.append("\n5- Ver meus ativos");
+                builder.append("\n6- Abrir book de ofertas");
+                builder.append("\n7- Extrato");
+                builder.append("\n8- Sair");
 
             }   
         }
@@ -113,7 +114,7 @@ public class Interfaces {
         builder.append("\nNome: ");
         String nome = JOptionPane.showInputDialog(builder);
         builder.append(nome);
-        builder.append("\nCPF: ");
+        builder.append("\nCPF/CNPJ: ");
         String cpf = JOptionPane.showInputDialog(builder);
         builder.append(cpf);
         builder.append("\nEndereço: ");
@@ -134,8 +135,7 @@ public class Interfaces {
         builder.append("HOME BROKER JJ");
         builder.append("\nConta criada com sucesso");
         
-        Conta conta = new Conta();
-        conta.setCliente(cliente);
+        Conta conta = new Conta(cliente);
         cliente.setConta(conta);
         
         JOptionPane.showMessageDialog (null, builder);
@@ -145,9 +145,9 @@ public class Interfaces {
     /* TELAS REFERENTES A OPERAÇÕES DE CONTA */
     //deposito
     public void depositar(Cliente cliente){
-        Movimentacao nova = new Movimentacao();
+        Movimentacao movimetacaoAtual = new Movimentacao();
         Date agora = new Date();
-                
+        
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
         builder.append("\nInsira o valor que deseja depositar");
@@ -155,13 +155,15 @@ public class Interfaces {
         builder.append("\nDescricao: ");
         String descricao = JOptionPane.showInputDialog(builder);
         
-        nova.setOperacao(Operacao.DEBITO);
-        nova.setValor(valor);
-        nova.setDataModificacao(agora);
-        nova.setDescricao(descricao);
+        movimetacaoAtual.setOperacao(Operacao.DEBITO);
+        movimetacaoAtual.setContaOrigem(cliente.getConta());
+        movimetacaoAtual.setContaDestino(cliente.getConta());
+        movimetacaoAtual.setValor(valor);
+        movimetacaoAtual.setDataModificacao(agora);
+        movimetacaoAtual.setDescricao(descricao);
         
         daoConta.depositar(cliente, valor);
-        daoMovimentacao.criar(nova);
+        daoMovimentacao.criar(movimetacaoAtual);
     }
     
     //saque
@@ -177,6 +179,8 @@ public class Interfaces {
         String descricao = JOptionPane.showInputDialog(builder);
         
         nova.setOperacao(Operacao.DEBITO);
+        nova.setContaDestino(null);
+        nova.setContaOrigem(cliente.getConta());
         nova.setValor(valor);
         nova.setDataModificacao(agora);
         nova.setDescricao(descricao);
@@ -188,13 +192,29 @@ public class Interfaces {
     //pagamento
     public void pagar(Cliente cliente){
         Cliente[] adm = daoCliente.getVetorAdm();
+        Movimentacao nova = new Movimentacao();
+        Date agora = new Date();
+        
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
         builder.append("\nQuanto é o valor do pagamento");
         BigDecimal valor = new BigDecimal(JOptionPane.showInputDialog(builder));
+        builder.append("\nDescrição:");
+        String descricao = JOptionPane.showInputDialog(builder);
+        
+        nova.setOperacao(Operacao.DEBITO);
+        nova.setContaDestino(null);
+        nova.setContaOrigem(cliente.getConta());
+        nova.setValor(valor);
+        nova.setDataModificacao(agora);
+        nova.setDescricao(descricao);
+  
+        daoConta.sacar(cliente, valor);
+        daoMovimentacao.criar(nova);
         
         //colocar tbm o daoMovimentacao
         daoConta.pagar(cliente, valor, adm[0]);
+        daoMovimentacao.criar(nova);
     }
     
     //transferencia
@@ -213,7 +233,7 @@ public class Interfaces {
             if((vetorComum[i] != null) && (idConta == vetorComum[i].getConta().getId())){
                 if(idConta == cliente.getConta().getId()){
                     JOptionPane.showMessageDialog (null, "Não é possível transferir para a própria conta");
-                    break;
+                    return;
                 }else{
                     builder.append("\nOs dados conferem? [1- Sim, 2- Não]");
                     builder.append(vetorComum[i].getConta());
@@ -237,7 +257,7 @@ public class Interfaces {
                         
                         daoMovimentacao.criar(nova);
                         JOptionPane.showMessageDialog (null, "Transferencia realizada com sucesso");
-                        break;
+                        return;
                     }
                 }
             }
@@ -245,14 +265,14 @@ public class Interfaces {
     }
     
     public void pagarDividendos(Cliente cliente){
-        Cliente[] vetorComum = daoCliente.getVetorComum();
+
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
         builder.append("\nDeseja executar agora o pagamento de dividendos?");
         int yesNo = JOptionPane.showConfirmDialog (null,"\nDeseja executar agora o pagamento de dividendos?", "HOME BROKER JJ", JOptionPane.YES_NO_OPTION);
         
         if(yesNo == 0){
-            daoConta.pagarDividendos(cliente);
+            daoConta.pagarDividendos(daoCliente.getVetorComum());
         }
         
     }
@@ -268,11 +288,9 @@ public class Interfaces {
         //extrato da conta que está logada
         builder.append(daoMovimentacao.ler(cliente.getConta()));
         JOptionPane.showMessageDialog(null, builder);
-        
-        
-        
     }
     
+    /* TELAS REFERENTES A ATIVOS */
     /* Telas de ativos */
     public void cadastrarAtivos(){
         builder.delete(0, builder.length());
@@ -295,15 +313,77 @@ public class Interfaces {
         daoAtivos.criarAtivos(nomeEmpresa, ticker, precoInicial, totalAtivos);
     }
     
+    // Tela para ver os ativos comprados
+    public void meusAtivos(Cliente cliente){
+        Ativos[] meusAtivos = cliente.getConta().getAtivos();
+        int op;
+        
+        do{
+            builder.delete(0, builder.length());
+            builder.append("HOME BROKER JJ");
+            builder.append("\n| Seus Ativos |");
+            builder.append("\n---------------------------");
+            for(int i = 0; i < meusAtivos.length; i++){
+                if(meusAtivos[i] != null){
+                    builder.append("\n" + meusAtivos[i]);
+                    builder.append("\n");
+                }
+            }
+            builder.append("\n1- Vender ativos");
+            builder.append("\n2- Sair");
+            op = Integer.parseInt(JOptionPane.showInputDialog(builder));
+            switch(op){
+                case 1:{
+                    venderAtivo(cliente);
+                    break;
+                }
+                case 2:{
+                    break;
+                }
+                default:{
+                    JOptionPane.showMessageDialog (null, "Insira um valor válido");
+                }
+            }
+        }while(op != 2);
+        
+    }
     
-    
-    /*STANDBY*/
-    public void comprarAtivos(Cliente cliente){
+    public void venderAtivo(Cliente cliente){
         Ativos[] vetorAtivos = daoAtivos.getAtivos();
         Ativos ativoEscolhido = null;
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
-        builder.append("\n| Compra de Ativos |");
+        builder.append("\n| Vender Ativo |");
+        builder.append("\n---------------------------");
+        for(int i = 0; i < cliente.getConta().getAtivos().length; i++){
+            if(cliente.getConta().getAtivos()[i] != null){
+                builder.append("\n"+cliente.getConta().getAtivos()[i]);
+            }
+        }
+        builder.append("\nInsira o ID do ativo que deseja vender: ");
+        int ativoId = Integer.parseInt(JOptionPane.showInputDialog(builder));
+        builder.append(ativoId);
+        builder.append("\nQual o valor de venda: ");
+        BigDecimal novoValor = new BigDecimal(JOptionPane.showInputDialog(builder));
+        builder.append(novoValor);
+        
+        for(int i = 0; i < vetorAtivos.length; i++){
+            if(vetorAtivos[i] != null && vetorAtivos[i].getId() == ativoId){
+                ativoEscolhido = vetorAtivos[i];
+                break;
+            }
+        }
+        
+        daoConta.venderAtivos(cliente, novoValor, ativoEscolhido);
+
+    }
+    // Book de ofertas
+    public void bookOfertas(Cliente cliente){
+        Ativos[] vetorAtivos = daoAtivos.getAtivos();
+        Ativos ativoEscolhido = null;
+        builder.delete(0, builder.length());
+        builder.append("HOME BROKER JJ");
+        builder.append("\n| BOOK DE OFERTAS |");
         builder.append("\n---------------------------");
         for(int i = 0; i < vetorAtivos.length; i++){
             if(vetorAtivos[i] != null){

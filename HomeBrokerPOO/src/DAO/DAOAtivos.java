@@ -22,18 +22,21 @@ public class DAOAtivos {
         ativo1.setTicker("JPP");
         ativo1.setTotalAtivos(5);
         ativo1.setPrecoInicial(new BigDecimal("50"));
+        ativo1.setPrecoUltimaVenda(new BigDecimal("50"));
         
         Ativos ativo2 = new Ativos();
         ativo2.setNomeEmpresa("Magalu");
         ativo2.setTicker("MAG");
         ativo2.setTotalAtivos(5);
         ativo2.setPrecoInicial(new BigDecimal("50"));
+        ativo2.setPrecoUltimaVenda(new BigDecimal("50"));
         
         Ativos ativo3 = new Ativos();
         ativo3.setNomeEmpresa("Only fans");
         ativo3.setTicker("ONF");
         ativo3.setTotalAtivos(5);
         ativo3.setPrecoInicial(new BigDecimal("50"));
+        ativo3.setPrecoUltimaVenda(new BigDecimal("50"));
         
         ativos[0] = ativo1;
         ativos[1] = ativo2;
@@ -51,6 +54,7 @@ public class DAOAtivos {
         ativo.setTicker(ticker);
         ativo.setTotalAtivos(totalAtivos);
         ativo.setPrecoInicial(precoInicial);
+        ativo.setPrecoUltimaVenda(precoInicial);
         
         for(int i = 0; i < ativos.length; i++){
             if(ativos[i] == null){

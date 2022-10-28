@@ -127,11 +127,11 @@ public class Movimentacao {
     public String toString() {
         return "\nMovimentacao: \n" +"Id: " + id + 
                "\nValor: " + valor + 
-               "\nConta Origem: " + conta.getId() + " "+ conta.getCliente().getNome() + 
-               "\nConta Destino: " + contaDestino.getId()+ " "+ contaDestino.getCliente().getNome() + 
-               "\nOperacao: " + tipoOperacao + 
-               "\nDescricao: " + descricao + 
-               "\nData de Modificacao: " + dataModificacao + "\n";
+               "\nConta Origem: Id = " + conta.getId() + " Nome = "+ conta.getCliente().getNome() + 
+               "\nConta Destino: Id= " + contaDestino.getId()+ " nome = "+ contaDestino.getCliente().getNome() + 
+               "\nOperacao: " + tipoOperacao +
+               "\nDescricao: " + descricao +
+               "\nData de Modificacao: " + dataModificacao;
     }
        
 }
