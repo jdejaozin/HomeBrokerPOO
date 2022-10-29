@@ -16,6 +16,7 @@ import java.util.Objects;
  * @author jp_te
  */
 public class Ordem {
+    private static int nextId;
     private int id;
     private int quantidade;
     private BigDecimal valor;
@@ -26,6 +27,11 @@ public class Ordem {
     private Estado estado;
     private Date dataCriacao;
     private Date dataModificacao;
+    
+    public Ordem(){
+        this.id = nextId++;
+        this.dataCriacao = new Date();
+    }
 
     public int getId() {
         return id;

@@ -12,6 +12,7 @@ import DAO.DAOCliente;
 import DAO.DAOConta;
 import DAO.DAOAtivos;
 import DAO.DAOMovimentacao;
+import DAO.DAOOrdem;
 import Entities.Ativos;
 import Entities.Conta;
 import Entities.Enum.Operacao;
@@ -31,7 +32,7 @@ public class Interfaces {
     private DAOConta daoConta = new DAOConta();
     private DAOAtivos daoAtivos = new DAOAtivos();
     private Cliente cliente = new Cliente();
-    
+    private DAOOrdem daoOrdem = new DAOOrdem();
     private DAOMovimentacao daoMovimentacao = new DAOMovimentacao();
     
     public Interfaces(){
@@ -309,7 +310,7 @@ public class Interfaces {
         BigDecimal precoInicial = new BigDecimal(JOptionPane.showInputDialog(builder));
         builder.append(precoInicial);
         
-        daoAtivos.criarAtivos(nomeEmpresa, ticker, precoInicial, totalAtivos);
+        daoAtivos.criarAtivos(daoCliente.getBolsa(), nomeEmpresa, ticker, precoInicial, totalAtivos);
     }
     
     // Tela para ver os ativos comprados
@@ -348,9 +349,10 @@ public class Interfaces {
     }
     
     public void venderAtivo(Cliente cliente){
-        Object[][] objetoAtivos = daoAtivos.getAtivos();
-        Ativos[] vetorAtivos = (Ativos[]) objetoAtivos[0];
+        Ativos[] vetorAtivos = daoAtivos.getAtivos();
         Ativos ativoEscolhido = null;
+        int numAtivo;
+        
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
         builder.append("\n| Vender Ativo |");
@@ -366,6 +368,9 @@ public class Interfaces {
         builder.append("\nQual o valor de venda: ");
         BigDecimal novoValor = new BigDecimal(JOptionPane.showInputDialog(builder));
         builder.append(novoValor);
+        builder.append("\nQuantos ativos deseja vender: ");
+        numAtivo = Integer.parseInt(JOptionPane.showInputDialog(builder));
+        builder.append(novoValor);
         
         for(int i = 0; i < vetorAtivos.length; i++){
             if(vetorAtivos[i] != null && vetorAtivos[i].getId() == ativoId){
@@ -374,13 +379,12 @@ public class Interfaces {
             }
         }
         
-        daoConta.venderAtivos(cliente, novoValor, ativoEscolhido);
+        daoOrdem.venderAtivo(cliente, novoValor, ativoEscolhido, numAtivo);
 
     }
     // Book de ofertas
     public void bookOfertas(Cliente cliente){
-        Object[][] objetoAtivos = daoAtivos.getAtivos();
-        Ativos[] vetorAtivos = (Ativos[]) objetoAtivos[0];
+        Ativos[] vetorAtivos = daoAtivos.getAtivos();
         Ativos ativoEscolhido = null;
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
@@ -402,9 +406,9 @@ public class Interfaces {
         }
         builder.append(ativoId);
         builder.append("\nQuantos ativos deseja comprar: ");
-        String numAtivo = JOptionPane.showInputDialog(builder);
+        int numAtivo = Integer.parseInt(JOptionPane.showInputDialog(builder));
         builder.append(numAtivo);
         
-        daoConta.comprarAtivos(cliente, ativoEscolhido, numAtivo);
+        daoOrdem.comprarAtivo(cliente, ativoEscolhido, numAtivo);
     }
 }
