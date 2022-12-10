@@ -7,7 +7,7 @@ package Entities;
 
 import Entities.Enum.Operacao;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -22,8 +22,8 @@ public class Movimentacao {
     private Conta contaDestino;
     private Operacao tipoOperacao;
     private String descricao;
-    private Date dataCriacao;
-    private Date dataModificacao;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataModificacao;
     
     public Movimentacao(){
         this.id = ++Movimentacao.serial;
@@ -44,10 +44,10 @@ public class Movimentacao {
     public String getDescricao(){
         return descricao;
     }
-    public Date getDataCriacao(){
+    public LocalDateTime getDataCriacao(){
         return dataCriacao;
     }
-    public Date getDataModificacao(){
+    public LocalDateTime getDataModificacao(){
         return dataModificacao;
     }
     
@@ -67,10 +67,10 @@ public class Movimentacao {
     public void setDescricao(String descricao){
         this.descricao = descricao;
     }
-    public void setDataCriacao(Date dataCriacao){
+    public void setDataCriacao(LocalDateTime dataCriacao){
         this.dataCriacao = dataCriacao;
     }
-    public void setDataModificacao(Date dataModificacao){
+    public void setDataModificacao(LocalDateTime dataModificacao){
         this.dataModificacao = dataModificacao;
     }
 

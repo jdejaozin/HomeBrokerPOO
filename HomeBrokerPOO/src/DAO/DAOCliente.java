@@ -1,8 +1,17 @@
 package DAO;
+import Connection.ConnectionFactory;
 import Entities.Cliente;
 import Entities.Conta;
 import Entities.Enum.Usuario;
-import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -10,58 +19,15 @@ import java.math.BigDecimal;
  */
 public class DAOCliente {
     
-    private DAOConta daoConta = new DAOConta();
-    private Cliente[] vetorAdm = new Cliente[5];
+    private final DAOConta daoConta = new DAOConta();
     private Cliente[] vetorComum = new Cliente[5];
-    private Cliente[] vetorBolsa = new Cliente[5];
-    public Cliente bolsa;
+    private Connection connection = null;
+    
     
     public DAOCliente(){
-        // Bolsa
-        bolsa = new Cliente();
-        bolsa.setCpf("312312000134");
-        bolsa.setEndereco("Home broker J5J");
-        bolsa.setLogin("bolsa");
-        bolsa.setNome("IBOVESPA");
-        bolsa.setTelefone("31231312");
-        bolsa.setSenha("135");
-        bolsa.setTipoUsuario(Usuario.BOLSA);
-        Conta contaBolsa = new Conta(bolsa);
-        bolsa.setConta(contaBolsa);
+        this.connection = new ConnectionFactory().getConnection();
         
-        //Criação do cliente adm
-        Cliente adm1 = new Cliente();
-        adm1.setCpf("95550664003");
-        adm1.setEndereco("Rua dos Bobos, 0");
-        adm1.setLogin("adm1");
-        adm1.setNome("João Paulo");
-        adm1.setTelefone("34987641029");
-        adm1.setSenha("123");
-        adm1.setTipoUsuario(Usuario.ADM);
-        daoConta.criarConta(adm1, bolsa);
-        
-        Cliente adm2 = new Cliente();
-        adm2.setCpf("72510999001");
-        adm2.setEndereco("Rua dos Bobos, 10");
-        adm2.setLogin("adm2");
-        adm2.setNome("João Pedro");
-        adm2.setTelefone("3488755301");
-        adm2.setSenha("123");
-        adm2.setTipoUsuario(Usuario.ADM);
-        
-        Cliente adm3 = new Cliente();
-        adm3.setCpf("77328134054");
-        adm3.setEndereco("Rua dos Bobos, 340");
-        adm3.setLogin("adm3");
-        adm3.setNome("Danete Danone");
-        adm3.setTelefone("34976378219");
-        adm3.setSenha("123");
-        adm3.setTipoUsuario(Usuario.ADM);
-        
-        vetorAdm[0] = adm1;
-        vetorAdm[1] = adm2;
-        vetorAdm[2] = adm3;
-        
+        /*
         //Criação do cliente comum
         Cliente comum1 = new Cliente();
         comum1.setCpf("24520690005");
@@ -71,6 +37,9 @@ public class DAOCliente {
         comum1.setTelefone("84933821382");
         comum1.setSenha("321");
         comum1.setTipoUsuario(Usuario.COMUM);
+        //setei as data aqui tbm
+        comum1.setDataCriacao(LocalDateTime.now());
+        comum1.setDataModificacao(LocalDateTime.now());
         daoConta.criarConta(comum1, bolsa);
 
         Cliente comum2 = new Cliente();
@@ -81,6 +50,9 @@ public class DAOCliente {
         comum2.setTelefone("84933821382");
         comum2.setSenha("321");
         comum2.setTipoUsuario(Usuario.COMUM);
+        //setei as data aqui tbm
+        comum2.setDataCriacao(LocalDateTime.now());
+        comum2.setDataModificacao(LocalDateTime.now());
         daoConta.criarConta(comum2, bolsa);
 
         Cliente comum3 = new Cliente();
@@ -91,90 +63,140 @@ public class DAOCliente {
         comum3.setTelefone("84933821382");
         comum3.setSenha("321");
         comum3.setTipoUsuario(Usuario.COMUM);
+        //setei as data aqui tbm
+        comum3.setDataCriacao(LocalDateTime.now());
+        comum3.setDataModificacao(LocalDateTime.now());
         daoConta.criarConta(comum3, bolsa);
         
         vetorComum[0] = comum1;
         vetorComum[1] = comum2;
-        vetorComum[2] = comum3;
+        vetorComum[2] = comum3;*/
   
     }
-    
-    public Cliente getBolsa(){
-        return bolsa;
-    }
 
-    public Cliente[] getVetorAdm() {
-        return vetorAdm;
-    }
-
-    public Cliente[] getVetorComum() {
-        return vetorComum;
-    }
     
     public Cliente validarLogin(String[] loginSenha){
-        System.out.println(bolsa);
-        for(int i = 0; i < vetorAdm.length; i++){
-            if(vetorAdm[i] != null){
-                System.out.println(vetorAdm[i]);
-            }
-        }
-        for(int i = 0; i < vetorComum.length; i++){
-            if(vetorComum[i] != null){
-                System.out.println(vetorComum[i]);
-            }
-        }
+        List<Cliente> clientes = getClientes();
         
-        for(int i = 0; i < vetorAdm.length; i++){
-            if(vetorAdm[i] != null && (loginSenha[0].equals(vetorAdm[i].getLogin()))){
-                if(loginSenha[1].equals(vetorAdm[i].getSenha())){
-                    return vetorAdm[i];
+        for(Cliente cliente : clientes){
+            if(cliente.getLogin().equals(loginSenha[0])){
+                if(cliente.getSenha().equals(loginSenha[1])){
+                    return cliente;
                 }
             }
         }
-        
-        for(int i = 0; i < vetorComum.length; i++){
-            if(vetorComum[i] != null && (loginSenha[0].equals(vetorComum[i].getLogin()))){
-                if(loginSenha[1].equals(vetorComum[i].getSenha())){
-                    return vetorComum[i];
-                }
-            }
-        }
-        
-        if(loginSenha[0].equals(bolsa.getLogin())){
-            if(loginSenha[1].equals(bolsa.getSenha())){
-                return bolsa;
-            }
-        }
-
         return null;
     }
     
-    public int novaPosicao(Cliente[] vetor){
-        for(int i = 0; i < vetorComum.length; i++){
-            if(vetorComum[i] == null){
-                return i;
+    public List<Cliente> getClientes(){
+        List<Cliente> clientes = new ArrayList<>();
+        String sql = "select * from cliente";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+
+            ResultSet resultQuery;
+            resultQuery = stmt.executeQuery();
+
+            while (resultQuery.next()) {
+                int id = resultQuery.getInt("id_cliente");
+                String login = resultQuery.getString("login");
+                String senha = resultQuery.getString("senha");
+                String nome = resultQuery.getString("nome");
+                String cpf= resultQuery.getString("cpf");
+                String endereco = resultQuery.getString("endereco");
+                String telefone = resultQuery.getString("telefone");
+                int conta = resultQuery.getInt("id_conta");
+                String tipoUsuario = resultQuery.getString("tipo");
+                
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss.S");
+                LocalDateTime dataCriacao = LocalDateTime.parse(resultQuery.getTimestamp("data_criacao").toString(), formatter);
+                LocalDateTime dataAlteracao = LocalDateTime.parse(resultQuery.getTimestamp("data_alteracao").toString(), formatter);
+
+                Cliente clienteResult = new Cliente();
+                clienteResult.setId(id);
+                clienteResult.setLogin(login);
+                clienteResult.setSenha(senha);
+                clienteResult.setNome(nome);
+                clienteResult.setCpf(cpf);
+                clienteResult.setEndereco(endereco);
+                clienteResult.setTelefone(telefone);
+                clienteResult.setTipoUsuario(Usuario.valueOf(tipoUsuario));
+                clienteResult.setDataCriacao(dataCriacao);
+                clienteResult.setDataModificacao(dataAlteracao);
+                if(conta != 0){
+                    clienteResult.setConta(daoConta.retornarConta(conta, clienteResult));
+                }
+                
+                
+                clientes.add(clienteResult);
             }
+            resultQuery.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        return -1;
+        return clientes;
     }
     
-    public void criarCliente(String login, String senha, String nome, String cpf, String endereco, String telefone, String tipoUsuario){
-        Cliente cliente = new Cliente();
+    public void criarCliente(String login, String senha, String nome, String cpf, 
+            String endereco, String telefone, String tipoUsuario){
+        String sql = "insert into cliente "
+                + "(login, senha, nome, cpf, endereco, telefone, tipo, data_criacao, data_alteracao)" 
+                + " values (?,?,?,?,?,?,?,?,?)";
         
-        cliente.setCpf(cpf);
-        cliente.setEndereco(endereco);
-        cliente.setLogin(login);
-        cliente.setNome(nome);
-        cliente.setTelefone(telefone);
-        cliente.setSenha(senha);
-        cliente.setTipoUsuario(Usuario.valueOf(tipoUsuario));
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setString(1, login);
+            stmt.setString(2, senha);
+            stmt.setString(3, nome);
+            stmt.setString(4, cpf);
+            stmt.setString(5, endereco);
+            stmt.setString(6, telefone);
+            stmt.setString(7, tipoUsuario);
+            stmt.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.execute();
+
+            System.out.println("Cliente inserido com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public void alterarCliente(String login, String senha, String nome, String cpf, 
+            String endereco, String telefone, int id){
+        String sql = "update cliente set "
+                + "login = ?, senha = ?, nome = ?, cpf = ?, endereco = ?, telefone = ?, data_alteracao = ?" 
+                + "where id_cliente = ?";
         
-        if(tipoUsuario.equals("COMUM")){
-            vetorComum[novaPosicao(vetorComum)] = cliente;
-        }else if (tipoUsuario.equals("ADM")){
-            vetorAdm[novaPosicao(vetorAdm)] = cliente;
-        }else{
-            vetorBolsa[novaPosicao(vetorBolsa)] = cliente;
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            
+            stmt.setString(1, login);
+            stmt.setString(2, senha);
+            stmt.setString(3, nome);
+            stmt.setString(4, cpf);
+            stmt.setString(5, endereco);
+            stmt.setString(6, telefone);
+            stmt.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setInt(8, id);
+            stmt.execute();
+
+            System.out.println("Cliente alterado com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    // Não sei se precisa, se precisar já tá aqui
+    public void removerCliente(int id){
+        String sql = "delete from cliente where id_cliente = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setInt(1, id);
+            stmt.execute();
+
+            System.out.println("Cliente excluído com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -11,6 +11,7 @@ import Entities.Conta;
 import Entities.Ordem;
 import Entities.Enum.Estado;
 import Entities.Enum.TipoOrdem;
+import Entities.OrdemExecucao;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -58,7 +59,14 @@ public class DAOOrdem {
     }*/
 
     public void comprarAtivo(Cliente cliente, Ativos ativo, int numAtivo){
-        Ordem ordemCompra = new Ordem();
+        Ordem ordemCompra = new Ordem();  
+        
+        OrdemExecucao novaOrdem = new OrdemExecucao();
+        DAOOrdemExecucao daoOrdemExecucao = new DAOOrdemExecucao();
+        Date agora = new Date();
+        
+        novaOrdem.setContaCompra(cliente.getConta());
+        novaOrdem.setDataCriacao(agora);
         //int ativos = numAtivo;
         
         if(ordem0(cliente, ativo)){
@@ -71,13 +79,15 @@ public class DAOOrdem {
                     ordemCompra.setValorTotal((ativo.getPrecoInicial().multiply(BigDecimal.valueOf(numAtivo))).multiply(BigDecimal.valueOf(0.1)));
                     ordemCompra.setTicker(ativo.getTicker());
                     ordemCompra.setConta(cliente.getConta());
-
+                    
+                    //novaOrdem.setContaVende();    no caso quem vende é a bolsa...
+                    
                     // -1 - menor, 0 - igual, 1 - maior
                     if(cliente.getConta().getSaldo().compareTo(ordemCompra.getValorTotal()) == 1){
 
                         ordemCompra.setEstado(Estado.TOTAL);
                         cliente.getConta().setSaldo(cliente.getConta().getSaldo().subtract(ordemCompra.getValorTotal()));
-                        ativo.setTotalAtivos(ativo.getTotalAtivos() - numAtivo);
+                        ativo.setTotalAtivos(ativo.getTotalAtivos() - numAtivo);      
 
                     }else if(cliente.getConta().getSaldo().compareTo(ordemCompra.getValorTotal()) == 0){
 
@@ -88,6 +98,10 @@ public class DAOOrdem {
                     }else if(cliente.getConta().getSaldo().compareTo(ordemCompra.getValorTotal()) == -1){
                         ordemCompra.setEstado(Estado.NAO);
                     }
+                    
+                    novaOrdem.setOrdem(ordemCompra);
+                    daoOrdemExecucao.criar(novaOrdem);
+
                 }
                 return;
             }else{
@@ -97,6 +111,7 @@ public class DAOOrdem {
         
         if(!ordem0(cliente, ativo)){
             if(ativo.getTotalAtivos() >= numAtivo){
+                
                 ordemCompra.setQuantidade(numAtivo);
                 ordemCompra.setTipoOrdem(TipoOrdem.COMPRA);
                 ordemCompra.setValor(ativo.getPrecoInicial());
@@ -120,11 +135,28 @@ public class DAOOrdem {
                 }else if(cliente.getConta().getSaldo().compareTo(ordemCompra.getValorTotal()) == -1){
                     ordemCompra.setEstado(Estado.NAO);
                 }
+                
+            } else if(ativo.getTotalAtivos() < numAtivo){
+                
+                ordemCompra.setEstado(Estado.PARCIAL);
+                cliente.getConta().setSaldo(cliente.getConta().getSaldo().subtract(ordemCompra.getValorTotal()));
+                ativo.setTotalAtivos(ativo.getTotalAtivos() - numAtivo);
+                int qtdeAtivosEspera = ativo.getTotalAtivos();
+                ordemCompra.setQuantidade(qtdeAtivosEspera);
             }
+            novaOrdem.setOrdem(ordemCompra);
+            daoOrdemExecucao.criar(novaOrdem);
         }
     }
     
     public void venderAtivo(Cliente cliente, BigDecimal valorVenda, Ativos ativo, int numAtivo){
+        
+        OrdemExecucao novaOrdem = new OrdemExecucao();
+        DAOOrdemExecucao daoOrdemExecucao = new DAOOrdemExecucao();
+        Date agora = new Date();
+        
+        novaOrdem.setContaCompra(cliente.getConta());
+        novaOrdem.setDataCriacao(agora);
         
         Ordem ordemCompra = new Ordem();
         ordemCompra.setQuantidade(numAtivo);
@@ -157,5 +189,7 @@ public class DAOOrdem {
             //adicionar estado parcial e não
             ordemCompra.setEstado(Estado.NAO);
         }
+        novaOrdem.setOrdem(ordemCompra);
+        daoOrdemExecucao.criar(novaOrdem);
     }
 }

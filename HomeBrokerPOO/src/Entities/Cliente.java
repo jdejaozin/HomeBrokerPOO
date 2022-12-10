@@ -6,7 +6,7 @@
 package Entities;
 
 import Entities.Enum.Usuario;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -14,7 +14,6 @@ import java.util.Objects;
  * @author jp_te
  */
 public class Cliente {
-    private static int nextId;
     private int id;
     private String cpf;
     private String endereco;
@@ -24,9 +23,12 @@ public class Cliente {
     private String senha;
     private Conta conta;
     private Usuario tipoUsuario;
-    private Date dataCriacao;
-    private Date dataModificacao;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataModificacao;
 
+    public Cliente(){
+    }
+    
     public int getId(){
         return id;
     }
@@ -54,58 +56,52 @@ public class Cliente {
     public Usuario getTipoUsuario(){
         return tipoUsuario;
     }
-    public Date getDataCriacao(){
+    public LocalDateTime getDataCriacao(){
         return dataCriacao;
     }
-    public Date getDataModificacao(){
+    public LocalDateTime getDataModificacao(){
         return dataModificacao;
     }
 
-    
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setCpf(String cpf) {
         this.cpf = cpf;
-        setDataModificacao(new Date());
+        //setDataModificacao(new Date());
     }
     public void setEndereco(String endereco){
         this.endereco = endereco;
-        setDataModificacao(new Date());
+
     }
     public void setLogin(String login){
         this.login = login;
-        setDataModificacao(new Date());
+
     }
     public void setNome(String nome){
         this.nome = nome;
-        setDataModificacao(new Date());
+
     }
     public void setTelefone(String telefone){
         this.telefone = telefone;
-        setDataModificacao(new Date());
+
     }
     public void setSenha(String senha){
         this.senha = senha;
-        setDataModificacao(new Date());
+
     }
     public void setConta(Conta conta){
         this.conta = conta;
-        setDataModificacao(new Date());
+
     }
     public void setTipoUsuario(Usuario tipoUsuario){
         this.tipoUsuario = tipoUsuario;
-        setDataModificacao(new Date());
     }
-    public void setDataCriacao(Date dataCriacao){
+    public void setDataCriacao(LocalDateTime dataCriacao){
         this.dataCriacao = dataCriacao;
-        setDataModificacao(new Date());
     }
-    public void setDataModificacao(Date dataModificacao){
+    public void setDataModificacao(LocalDateTime dataModificacao){
         this.dataModificacao = dataModificacao;
-    }
-    
-    public Cliente(){
-        this.id = nextId++;
-        this.dataCriacao = new Date();
-        this.dataModificacao = new Date();
     }
 
     @Override

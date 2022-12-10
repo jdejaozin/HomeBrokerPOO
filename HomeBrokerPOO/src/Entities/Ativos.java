@@ -6,7 +6,7 @@
 package Entities;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -14,18 +14,15 @@ import java.util.Objects;
  * @author jp_te
  */
 public class Ativos {
-    private static int nextId;
     private int id;
     private int totalAtivos;
     private BigDecimal precoInicial;
     private String nomeEmpresa;
     private String ticker;
-    private Date dataCriacao;
-    private Date dataModificacao;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataModificacao;
     
     public Ativos(){
-        this.id = nextId++;
-        this.dataCriacao = new Date();
     }
     
     public int getId(){
@@ -43,35 +40,32 @@ public class Ativos {
     public String getTicker(){
         return ticker;
     }
-    public Date getDataCriacao(){
+    public LocalDateTime getDataCriacao(){
         return dataCriacao;
     }
-    public Date getDataModificacao(){
+    public LocalDateTime getDataModificacao(){
         return dataModificacao;
     }
-    
-    
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setTotalAtivos(int totalAtivos){
         this.totalAtivos = totalAtivos;
-        setDataModificacao(new Date());
     }
     public void setPrecoInicial(BigDecimal precoInicial){
         this.precoInicial = precoInicial;
-        setDataModificacao(new Date());
     }
     public void setNomeEmpresa(String nomeEmpresa){
         this.nomeEmpresa = nomeEmpresa;
-        setDataModificacao(new Date());
     }
     public void setTicker(String ticker){
         this.ticker = ticker;
-        setDataModificacao(new Date());
     }
-    public void setDataCriacao(Date dataCriacao){
+    public void setDataCriacao(LocalDateTime dataCriacao){
         this.dataCriacao = dataCriacao;
-        setDataModificacao(new Date());
     }
-    public void setDataModificacao(Date dataModificacao){
+    public void setDataModificacao(LocalDateTime dataModificacao){
         this.dataModificacao = dataModificacao;
     }
     

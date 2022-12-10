@@ -5,9 +5,18 @@
  */
 package DAO;
 
+import Connection.ConnectionFactory;
 import Entities.Ativos;
-import Entities.Cliente;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -15,60 +24,108 @@ import java.math.BigDecimal;
  */
 public class DAOAtivos {
     
-    private Ativos[] ativos = new Ativos[5];
     private DAOOrdem daoOrdem = new DAOOrdem();
+    private Connection connection = null;
     
     public DAOAtivos(){
-
-        Ativos ativo1 = new Ativos();
-        ativo1.setNomeEmpresa("João Pedro & Paulo");
-        ativo1.setTicker("JPP");
-        ativo1.setTotalAtivos(5);
-        ativo1.setPrecoInicial(new BigDecimal("50"));
-        //ativo1.setPrecoUltimaVenda(new BigDecimal("50"));
-        
-        Ativos ativo2 = new Ativos();
-        ativo2.setNomeEmpresa("Magalu");
-        ativo2.setTicker("MAG");
-        ativo2.setTotalAtivos(5);
-        ativo2.setPrecoInicial(new BigDecimal("50"));
-        //ativo2.setPrecoUltimaVenda(new BigDecimal("50"));
-        
-        Ativos ativo3 = new Ativos();
-        ativo3.setNomeEmpresa("Only fans");
-        ativo3.setTicker("ONF");
-        ativo3.setTotalAtivos(5);
-        ativo3.setPrecoInicial(new BigDecimal("50"));
-        //ativo3.setPrecoUltimaVenda(new BigDecimal("50"));
-        
-        ativos[0] = ativo1;
-        ativos[1] = ativo2;
-        ativos[2] = ativo3;
+        this.connection = new ConnectionFactory().getConnection();
     }
 
-    public Ativos[] getAtivos() {
+    public List<Ativos> getAtivos() {
+        List<Ativos> ativos = new ArrayList<>();
+        String sql = "select * from tickers";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+
+            ResultSet resultQuery;
+            resultQuery = stmt.executeQuery();
+
+            while (resultQuery.next()) {
+                int id = resultQuery.getInt("id_ticker");
+                String nomeEmpresa = resultQuery.getString("nome_empresa");
+                String ticker = resultQuery.getString("ticker");
+                int totalAtivos = resultQuery.getInt("total_ativos");
+                BigDecimal preco = BigDecimal.valueOf(resultQuery.getDouble("preco_inicial"));
+  
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss.S");
+                LocalDateTime dataCriacao = LocalDateTime.parse(resultQuery.getTimestamp("data_criacao").toString(), formatter);
+                LocalDateTime dataAlteracao = LocalDateTime.parse(resultQuery.getTimestamp("data_alteracao").toString(), formatter);
+
+                Ativos ativoResult = new Ativos();
+                ativoResult.setId(id);
+                ativoResult.setNomeEmpresa(nomeEmpresa);
+                ativoResult.setTicker(ticker);
+                ativoResult.setTotalAtivos(totalAtivos);
+                ativoResult.setPrecoInicial(preco);
+                ativoResult.setDataCriacao(dataCriacao);
+                ativoResult.setDataModificacao(dataAlteracao);
+                
+                ativos.add(ativoResult);
+            }
+            
+            resultQuery.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return ativos;
     }
     
-    public int proximaPosicaoLivre(){
-        for (int i = 0; i < ativos.length; i++) {
-            if(ativos[i] == null){
-                return i;
-            }         
-        }
-        return -1;
-    }
-    
-    public void criarAtivos(Cliente bolsa, String nomeEmpresa, String ticker, BigDecimal precoInicial, int totalAtivos){
-        Ativos ativo = new Ativos();
+    public void criarAtivos(String nomeEmpresa, String ticker, int totalAtivos, BigDecimal precoInicial){
         
-        ativo.setNomeEmpresa(nomeEmpresa);
-        ativo.setTicker(ticker);
-        ativo.setTotalAtivos(totalAtivos);
-        ativo.setPrecoInicial(precoInicial);
-        //ativo.setPrecoUltimaVenda(precoInicial);
-        ativos[proximaPosicaoLivre()] = ativo;
-        daoOrdem.venderAtivo(bolsa, precoInicial, ativo, totalAtivos);
+        String sql = "insert into tickers "
+                + "(nome_empresa, ticker, total_ativos, preco_inicial, data_criacao, data_alteracao)" 
+                + " values (?,?,?,?,?,?)";
+
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setString(1, nomeEmpresa);
+            stmt.setString(2, ticker);
+            stmt.setInt(3, totalAtivos);
+            stmt.setDouble(4, precoInicial.doubleValue());
+            stmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.execute();
+
+            System.out.println("Ativo inserido com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
     
+    public void alterarAtivos(String nomeEmpresa, String ticker, int totalAtivos, BigDecimal precoInicial, int id){
+        String sql = "update tickers set "
+                + "nome_empresa = ?, ticker = ?, total_ativos = ?, preco_inicial = ?, data_alteracao = ?"
+                + "where id_ticker = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            
+            stmt.setString(1, nomeEmpresa);
+            stmt.setString(2, ticker);
+            stmt.setInt(3, totalAtivos);
+            stmt.setDouble(4, precoInicial.doubleValue());
+            stmt.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setInt(6, id);
+            stmt.execute();
+
+            System.out.println("Ativo alterado com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    // Não sei se precisa, se precisar já tá aqui
+    public void removerAtivo(int id){
+        String sql = "delete from tickers where id_ticker = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setInt(1, id);
+            stmt.execute();
+
+            System.out.println("Ativo excluído com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

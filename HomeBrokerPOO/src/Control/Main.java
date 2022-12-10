@@ -39,14 +39,22 @@ public class Main {
                                         break;
                                     }
                                     case 2:{
-                                        GUI.pagarDividendos(cliente);
+                                        GUI.alterarClienteTela();
                                         break;
                                     }
                                     case 3:{
-                                        GUI.cadastrarAtivos();
+                                        GUI.pagarDividendos(cliente);
                                         break;
                                     }
                                     case 4:{
+                                        GUI.cadastrarAtivos();
+                                        break;
+                                    }
+                                    case 5:{
+                                        GUI.alterarAtivos();
+                                        break;
+                                    }
+                                    case 6:{
                                         break;
                                     }
                                     default: {
@@ -54,7 +62,7 @@ public class Main {
                                         break;
                                     }
                                 }
-                            }while(opAdm != 4);
+                            }while(opAdm != 6);
                             
                         }else{
                             int opComum;
@@ -64,7 +72,7 @@ public class Main {
                                     switch(opComum){
                                         case 1:{
                                             GUI.cadastrarConta(cliente);
-                                            break;
+                                            return;
                                         }
                                         case 2:{
                                             break;
@@ -101,7 +109,7 @@ public class Main {
                                             break;
                                         }
                                         case 5:{
-                                            GUI.meusAtivos(cliente);
+                                            //GUI.meusAtivos(cliente);
                                             break;
                                         }
                                         case 6:{
