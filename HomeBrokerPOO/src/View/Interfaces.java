@@ -77,10 +77,14 @@ public class Interfaces {
         if(cliente.getTipoUsuario() == Usuario.ADM){
             builder.append("\n1- Criar novo cliente");
             builder.append("\n2- Alterar cliente");
-            builder.append("\n3- Pagar dividendos");
-            builder.append("\n4- Cadastrar tickets");
-            builder.append("\n5- Alterar tickets");
-            builder.append("\n6- Sair");
+            builder.append("\n3- Remover cliente");
+            builder.append("\n4- Lista de clientes");
+            builder.append("\n5- Pagar dividendos");
+            builder.append("\n6- Cadastrar ticker");
+            builder.append("\n7- Alterar ticker");
+            builder.append("\n8- Remover ticker");
+            builder.append("\n9- Lista de tickers");
+            builder.append("\n10- Sair");
         }else{
             if(cliente.getConta() == null){
                 builder.append("\n1- Cadastrar conta");
@@ -95,7 +99,8 @@ public class Interfaces {
                 builder.append("\n5- Ver meus ativos");
                 builder.append("\n6- Abrir book de ofertas");
                 builder.append("\n7- Extrato");
-                builder.append("\n8- Sair");
+                builder.append("\n8- Fechar conta");
+                builder.append("\n9- Sair");
             }
         }
         op = Integer.parseInt(JOptionPane.showInputDialog(builder));
@@ -168,6 +173,22 @@ public class Interfaces {
         daoCliente.alterarCliente(login, senha, nome, cpf, endereco, telefone, id);
     }
     
+    public void removerCliente(){
+        builder.delete(0, builder.length());
+        builder.append("HOME BROKER JJ");
+        builder.append("\n| Exclusão de Cliente |");
+        builder.append("\n---------------------------");
+        builder.append("\nInsira o ID do cliente que remover");
+        int id = Integer.parseInt(JOptionPane.showInputDialog(builder));
+        
+        daoCliente.removerCliente(id);
+        
+        builder.delete(0, builder.length());
+        builder.append("HOME BROKER JJ");
+        builder.append("\nCliente removido com sucesso");
+        JOptionPane.showMessageDialog (null, builder);
+    }
+    
     public void pagarDividendos(Cliente cliente){
 
         builder.delete(0, builder.length());
@@ -200,7 +221,6 @@ public class Interfaces {
         builder.append(precoInicial);
         
         daoAtivos.criarAtivos(nomeEmpresa, ticker, totalAtivos, precoInicial);
-        
     }
     
     public void alterarAtivos(){
@@ -232,6 +252,21 @@ public class Interfaces {
         daoAtivos.alterarAtivos(nomeEmpresa, ticker, totalAtivos, precoInicial, id);
     }
     
+    public void removerAtivos(){
+        builder.delete(0, builder.length());
+        builder.append("HOME BROKER JJ");
+        builder.append("\n| Exclusão de Ativos |");
+        builder.append("\n---------------------------");
+        builder.append("\nInsira o ID do ativo que remover");
+        int id = Integer.parseInt(JOptionPane.showInputDialog(builder));
+        
+        daoAtivos.removerAtivo(id);
+        
+        builder.delete(0, builder.length());
+        builder.append("HOME BROKER JJ");
+        builder.append("\nAtivo removido com sucesso");
+        JOptionPane.showMessageDialog (null, builder);
+    }
     
     
     
@@ -241,148 +276,115 @@ public class Interfaces {
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
         builder.append("\nConta criada com sucesso");
-        
         daoConta.criarConta(cliente);
+        daoCliente.setContaCliente(cliente);
         
         JOptionPane.showMessageDialog (null, builder);
     }
     
+    public void fecharConta(Cliente cliente){
+        int yesNo = JOptionPane.showConfirmDialog (null,"\nTem certeza que deseja fechar sua conta?", "HOME BROKER JJ", JOptionPane.YES_NO_OPTION);
+
+        if(yesNo == 0){
+            daoCliente.fecharConta(cliente);
+        }
+    }
     
     /* TELAS REFERENTES A OPERAÇÕES DE CONTA */
     //deposito
     public void depositar(Cliente cliente){
-        Movimentacao movimetacaoAtual = new Movimentacao();
-        //LocalDateTime agora = null;
-        
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
-        builder.append("\nInsira o valor que deseja depositar");
+        builder.append("\nInsira o valor que deseja depositar: ");
         BigDecimal valor = new BigDecimal(JOptionPane.showInputDialog(builder));
+        builder.append(valor);
+        builder.append("\nTipo de operacao[CREDITO/DEBITO]: ");
+        String tipoOperacao = JOptionPane.showInputDialog(builder);
+        builder.append(tipoOperacao);
         builder.append("\nDescricao: ");
         String descricao = JOptionPane.showInputDialog(builder);
         
-        movimetacaoAtual.setOperacao(Operacao.DEBITO);
-        movimetacaoAtual.setContaOrigem(cliente.getConta());
-        movimetacaoAtual.setContaDestino(cliente.getConta());
-        movimetacaoAtual.setValor(valor);
-        
-        //movimetacaoAtual.setDataModificacao(agora.now());
-        movimetacaoAtual.setDescricao(descricao);
-        
-        daoConta.depositar(cliente, valor);
-        daoMovimentacao.criar(movimetacaoAtual);
+        daoConta.depositar(cliente.getConta().getId(), valor);
+        daoMovimentacao.criarMovimentacao(valor, cliente.getConta().getId(), cliente.getConta().getId(), tipoOperacao, descricao);
     }
     
     //saque
     public void sacar(Cliente cliente){
-        Movimentacao nova = new Movimentacao();
-       // LocalDateTime agora = null;
-        
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
-        builder.append("\nInsira o valor que sacar depositar");
+        builder.append("\nInsira o valor que deseja sacar: ");
         BigDecimal valor = new BigDecimal(JOptionPane.showInputDialog(builder));
+        builder.append(valor);
+        String tipoOperacao = "DEBITO";
         builder.append("\nDescricao: ");
         String descricao = JOptionPane.showInputDialog(builder);
-        
-        nova.setOperacao(Operacao.DEBITO);
-        nova.setContaDestino(null);
-        nova.setContaOrigem(cliente.getConta());
-        nova.setValor(valor);
-        //nova.setDataModificacao(agora.now());
-        nova.setDescricao(descricao);
-  
-        daoConta.sacar(cliente, valor);
-        daoMovimentacao.criar(nova);
+
+        daoConta.sacar(cliente.getConta().getId(), valor);
+        daoMovimentacao.criarMovimentacao(valor, cliente.getConta().getId(), cliente.getConta().getId(), tipoOperacao, descricao);
     }
     
     //pagamento
     public void pagar(Cliente cliente){
-        //Cliente[] adm = daoCliente.getVetorAdm();
-        Movimentacao nova = new Movimentacao();
-        //LocalDateTime agora = null;
-        
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
-        builder.append("\nQuanto é o valor do pagamento");
+        builder.append("\nInsira o valor que deseja pagar: ");
         BigDecimal valor = new BigDecimal(JOptionPane.showInputDialog(builder));
-        builder.append("\nDescrição:");
+        builder.append(valor);
+        builder.append("\nTipo de operacao[CREDITO/DEBITO]: ");
+        String tipoOperacao = JOptionPane.showInputDialog(builder);
+        builder.append(tipoOperacao);
+        builder.append("\nDescricao: ");
         String descricao = JOptionPane.showInputDialog(builder);
-        
-        nova.setOperacao(Operacao.DEBITO);
-        nova.setContaDestino(null);
-        nova.setContaOrigem(cliente.getConta());
-        nova.setValor(valor);
-        //nova.setDataModificacao(agora.now());
-        nova.setDescricao(descricao);
-  
-        daoConta.sacar(cliente, valor);
-        daoMovimentacao.criar(nova);
-        
-        //colocar tbm o daoMovimentacao
-        //daoConta.pagar(cliente, valor, adm[0]);
-        daoMovimentacao.criar(nova);
+
+        daoConta.pagar(cliente.getConta().getId(), valor, 2);
+        daoMovimentacao.criarMovimentacao(valor, cliente.getConta().getId(), 2, tipoOperacao, descricao);
     }
     
     //transferencia
     public void transferir(Cliente cliente){
-        List<Cliente> clientesLista = daoCliente.getClientes();
-        int confirmar = 0;
-                
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
-        builder.append("\nQuanto deseja transferir");
+        builder.append("\nInsira o valor que deseja transferir: ");
         BigDecimal valor = new BigDecimal(JOptionPane.showInputDialog(builder));
+        builder.append(valor);
         builder.append("\nInsira o id da conta para qual deseja transferir");
-        int idConta = Integer.parseInt(JOptionPane.showInputDialog(builder));
-        builder.append(idConta);
+        int idDestino = Integer.parseInt(JOptionPane.showInputDialog(builder));
         
-        for(Cliente clientes : clientesLista){
-            if(idConta == cliente.getConta().getId()){
-                    JOptionPane.showMessageDialog (null, "Não é possível transferir para a própria conta");
-                    return;
-            }else if (idConta == clientes.getId()){
-                builder.append("\nOs dados conferem? [1- Sim, 2- Não]");
-                builder.append(clientes.getConta());
-                confirmar = Integer.parseInt(JOptionPane.showInputDialog(builder));
-                
-                if(confirmar == 1){
-
-                    Movimentacao nova = new Movimentacao();
-                    //LocalDateTime agora = null;
-                    builder.append("\nDescricao: ");
-                    String descricao = JOptionPane.showInputDialog(builder);
-
-                    daoConta.transferir(cliente, valor, clientes);
-
-                    nova.setOperacao(Operacao.DEBITO);
-                    nova.setContaOrigem(cliente.getConta());
-                    nova.setContaDestino(clientes.getConta());
-                    nova.setDescricao(descricao);
-                    nova.setValor(valor);
-                    //nova.setDataModificacao(agora.now());
-
-                    daoMovimentacao.criar(nova);
-                    JOptionPane.showMessageDialog (null, "Transferencia realizada com sucesso");
-                    return;
-
-                }
-            }
+        if(idDestino == cliente.getId()){
+            JOptionPane.showMessageDialog (null, "Não é possível transferir para a própria conta");
+            return;
+        }
+        builder.append(idDestino);
+        
+        builder.append("\nTipo de operacao[CREDITO/DEBITO]: ");
+        String tipoOperacao = JOptionPane.showInputDialog(builder);
+        builder.append(tipoOperacao);
+        builder.append("\nDescricao: ");
+        String descricao = JOptionPane.showInputDialog(builder);
+        builder.append(descricao);
+        builder.append("\nConfirmar transferência? [1- Sim, 2- Não]");
+        int confirmar = Integer.parseInt(JOptionPane.showInputDialog(builder));
+        
+        if(confirmar == 1){
+            daoConta.transferir(cliente.getConta().getId(), valor, idDestino);
+            daoMovimentacao.criarMovimentacao(valor, cliente.getConta().getId(), idDestino, tipoOperacao, descricao);
+            JOptionPane.showMessageDialog (null, "Transferencia realizada com sucesso");
+        }else{
+            JOptionPane.showMessageDialog (null, "Transferencia cancelada");
         }
     }
     
-
-    
     //mostrar extrato
     public void gerarExtrato(Cliente cliente){
-                
+        List<Movimentacao> movimentacoes = daoMovimentacao.buscarMovimentacoes(cliente.getConta().getId());
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
-        builder.append("\n| Extrato |");
+        builder.append("\n| EXTRATO |");
         builder.append("\n---------------------------");
-        //extrato da conta que está logada
-        builder.append(daoMovimentacao.ler(cliente.getConta()));
-        JOptionPane.showMessageDialog(null, builder);
+        for(Movimentacao movimentacao : movimentacoes){
+            builder.append("\n"+ movimentacao.toString());
+        }
+        JOptionPane.showMessageDialog (null, builder);
     }
     
     
@@ -489,5 +491,29 @@ public class Interfaces {
         builder.append(numAtivo);
         
         daoOrdem.comprarAtivo(cliente, ativoEscolhido, numAtivo);
+    }
+    
+    public void listaClientes(){
+        List<Cliente> clientes = daoCliente.getClientes();
+        builder.delete(0, builder.length());
+        builder.append("HOME BROKER JJ");
+        builder.append("\n| LISTA DE CLIENTES |");
+        builder.append("\n---------------------------");
+        for(Cliente cliente : clientes){
+            builder.append(cliente.toString());
+        }
+        JOptionPane.showMessageDialog (null, builder);
+    }
+    
+    public void listaTickers(){
+        List<Ativos> ativos = daoAtivos.getAtivos();
+        builder.delete(0, builder.length());
+        builder.append("HOME BROKER JJ");
+        builder.append("\n| LISTA DE ATIVOS |");
+        builder.append("\n---------------------------");
+        for(Ativos ativo : ativos){
+            builder.append("\n"+ativo.toString());
+        }
+        JOptionPane.showMessageDialog (null, builder);
     }
 }

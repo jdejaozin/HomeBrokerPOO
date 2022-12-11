@@ -118,6 +118,9 @@ public class Ativos {
                 "\nEmpresa = " + nomeEmpresa + 
                 "\nTicker = " + ticker + 
                 "\nPreço = " + precoInicial + 
-                "\nTotal de ativos disponíveis = " + totalAtivos;
+                "\nTotal de ativos disponíveis = " + totalAtivos +
+                "\nData de criação = " + dataCriacao +
+                "\nÚltima modificação = " + dataModificacao;
+                
     }
 }

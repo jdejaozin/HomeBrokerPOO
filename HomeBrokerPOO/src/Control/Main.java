@@ -43,18 +43,34 @@ public class Main {
                                         break;
                                     }
                                     case 3:{
-                                        GUI.pagarDividendos(cliente);
+                                        GUI.removerCliente();
                                         break;
                                     }
                                     case 4:{
-                                        GUI.cadastrarAtivos();
+                                        GUI.listaClientes();
                                         break;
                                     }
                                     case 5:{
-                                        GUI.alterarAtivos();
+                                        GUI.pagarDividendos(cliente);
                                         break;
                                     }
                                     case 6:{
+                                        GUI.cadastrarAtivos();
+                                        break;
+                                    }
+                                    case 7:{
+                                        GUI.alterarAtivos();
+                                        break;
+                                    }
+                                    case 8:{
+                                        GUI.removerAtivos();
+                                        break;
+                                    }
+                                    case 9:{
+                                        GUI.listaTickers();
+                                        break;
+                                    }
+                                    case 10:{
                                         break;
                                     }
                                     default: {
@@ -62,7 +78,7 @@ public class Main {
                                         break;
                                     }
                                 }
-                            }while(opAdm != 6);
+                            }while(opAdm != 10);
                             
                         }else{
                             int opComum;
@@ -72,7 +88,7 @@ public class Main {
                                     switch(opComum){
                                         case 1:{
                                             GUI.cadastrarConta(cliente);
-                                            return;
+                                            break;
                                         }
                                         case 2:{
                                             break;
@@ -121,6 +137,10 @@ public class Main {
                                             break;
                                         }
                                         case 8:{
+                                            GUI.fecharConta(cliente);
+                                            break;
+                                        }
+                                        case 9:{
                                             break;
                                         }
                                         default: {
@@ -128,7 +148,7 @@ public class Main {
                                             break;
                                         }
                                     }
-                                }while(opComum != 8);
+                                }while(opComum != 9);
                             }
                         }
 

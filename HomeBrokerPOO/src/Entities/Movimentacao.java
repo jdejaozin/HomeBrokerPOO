@@ -15,27 +15,28 @@ import java.util.Objects;
  * @author jJPGF
  */
 public class Movimentacao {
-    private static int serial;
-    private final int id;
+    private int id;
     private BigDecimal valor;
-    private Conta conta;
-    private Conta contaDestino;
+    private int conta;
+    private int contaDestino;
     private Operacao tipoOperacao;
     private String descricao;
     private LocalDateTime dataCriacao;
     private LocalDateTime dataModificacao;
     
     public Movimentacao(){
-        this.id = ++Movimentacao.serial;
     }
-    
+
+    public int getId() {
+        return id;
+    }
     public BigDecimal getValor(){
         return valor;
     }
-    public Conta getContaOrigem(){
+    public int getContaOrigem(){
         return conta;
     }
-    public Conta getContaDestino(){
+    public int getContaDestino(){
         return contaDestino;
     }
     public Operacao getOperacao(){
@@ -50,15 +51,17 @@ public class Movimentacao {
     public LocalDateTime getDataModificacao(){
         return dataModificacao;
     }
-    
 
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setValor(BigDecimal valor){
         this.valor = valor;
     }
-    public void setContaOrigem(Conta conta){
+    public void setContaOrigem(int conta){
         this.conta = conta;
     }
-    public void setContaDestino(Conta contaDestino){
+    public void setContaDestino(int contaDestino){
         this.contaDestino = contaDestino;
     }
     public void setOperacao(Operacao tipoOperacao){
@@ -127,8 +130,8 @@ public class Movimentacao {
     public String toString() {
         return "\nMovimentacao: \n" +"Id: " + id + 
                "\nValor: " + valor + 
-               "\nConta Origem: Id = " + conta.getId() + " Nome = "+ conta.getCliente().getNome() + 
-               "\nConta Destino: Id= " + contaDestino.getId()+ " nome = "+ contaDestino.getCliente().getNome() + 
+               "\nConta Origem: Id = " + conta + 
+               "\nConta Destino: Id= " + contaDestino +
                "\nOperacao: " + tipoOperacao +
                "\nDescricao: " + descricao +
                "\nData de Modificacao: " + dataModificacao;

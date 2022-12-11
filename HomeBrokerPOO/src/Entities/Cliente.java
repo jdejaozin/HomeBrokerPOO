@@ -160,10 +160,13 @@ public class Cliente {
 
     @Override
     public String toString() {
-        return "id=" + id + ", cpf=" + cpf + ", endereco=" + endereco + ", login=" + login + ", nome=" + nome + ", telefone=" + telefone + ", senha=" + senha + ", tipoUsuario=" + tipoUsuario + ", dataCriacao=" + dataCriacao + ", dataModificacao=" + dataModificacao + '}';
+        return "\nId do cliente = " + id + 
+                "\nNome = " + nome + 
+                "\nCPF = " + cpf + 
+                "\nEndereço = " + endereco + 
+                "\nTelefone=" + telefone + 
+                "\nUsuário = " + tipoUsuario + 
+                "\nData de criação = " + dataCriacao + 
+                "\nÚltima modificação = " + dataModificacao;
     }
-
-    
-
-        
 }

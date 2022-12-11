@@ -113,9 +113,7 @@ public class DAOAtivos {
             throw new RuntimeException(e);
         }
     }
-    
-    
-    // Não sei se precisa, se precisar já tá aqui
+
     public void removerAtivo(int id){
         String sql = "delete from tickers where id_ticker = ?";
         

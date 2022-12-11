@@ -1,10 +1,8 @@
 package DAO;
 
 import Connection.ConnectionFactory;
-import Entities.Ativos;
 import Entities.Cliente;
 import Entities.Conta;
-import Entities.Enum.Usuario;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -27,25 +25,26 @@ public class DAOConta {
         this.connection = new ConnectionFactory().getConnection();
     }
     
-    public Conta retornarConta(int idConta, Cliente cliente){
+    public Conta retornarConta(Cliente cliente){
         Conta conta = new Conta(cliente);
-        String sql = "select * from conta where id_conta = ?";
+        String sql = "select * from conta where id_cliente = ?";
+        
         try (PreparedStatement stmt = connection.prepareStatement(sql);){
-            stmt.setInt(1, idConta);
+            stmt.setInt(1, cliente.getId());
             ResultSet resultQuery;
             resultQuery = stmt.executeQuery();
             while (resultQuery.next()) {
-
+                int id = resultQuery.getInt("id_conta");
                 BigDecimal saldo = BigDecimal.valueOf(resultQuery.getDouble("saldo"));
                 
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss.S");
                 LocalDateTime dataCriacao = LocalDateTime.parse(resultQuery.getTimestamp("data_criacao").toString(), formatter);
                 LocalDateTime dataAlteracao = LocalDateTime.parse(resultQuery.getTimestamp("data_alteracao").toString(), formatter);
                 
+                conta.setId(id);
                 conta.setSaldo(saldo);
                 conta.setDataCriacao(dataCriacao);
                 conta.setDataModificacao(dataAlteracao);
-                
             }
             resultQuery.close();
         } catch (SQLException e) {
@@ -55,16 +54,13 @@ public class DAOConta {
     }
     
     public void criarConta(Cliente cliente){
-        int idConta = 0;
-        int idCliente = cliente.getId();
-        
-        String sqlInsertConta = "insert into conta "
+
+        String sql = "insert into conta "
                 + "(id_cliente, saldo, data_criacao, data_alteracao)" 
                 + " values (?,?,?,?)";
-
         
-        try (PreparedStatement stmt = connection.prepareStatement(sqlInsertConta);){
-            stmt.setInt(1, idCliente);
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setInt(1, cliente.getId());
             stmt.setDouble(2, 20000.00);
             stmt.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
             stmt.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
@@ -74,60 +70,39 @@ public class DAOConta {
             throw new RuntimeException(e);
         }
         
-        String sqlSelectIdConta = "select * from conta where id_cliente = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sqlSelectIdConta);){
-            stmt.setInt(1, idCliente);
-            ResultSet resultQuery;
-            resultQuery = stmt.executeQuery();
-            while (resultQuery.next()) {
-                idConta = resultQuery.getInt("id_conta");
-            }
-            resultQuery.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        String sqlUpdateCliente = "update cliente set id_conta = ?, data_alteracao where id_cliente = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sqlUpdateCliente);){
-            stmt.setInt(1, idConta);
-            stmt.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
-            stmt.setInt(3, idCliente);
+        adicionarBolsa();
+    }
+    
+    public void removerConta(int id){
+        String sql = "delete from conta where id_cliente = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setInt(1, id);
             stmt.execute();
-            System.out.println("Conta atrelada com sucesso.");
+
+            System.out.println("Conta excluída com sucesso.");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        //depositar(bolsa, BigDecimal.valueOf(500000.00));
-
     }
     
-    public void depositar(Cliente cliente, BigDecimal valor){
-        cliente.getConta().setSaldo(cliente.getConta().getSaldo().add(valor));
-        
-        //cliente.setDataModificacao(LocalDateTime.now());
+    /* OPERAÇÕES DE CONTA */
+    public void depositar(int idConta, BigDecimal valor){
+        adicionarValor(idConta, valor);
     }
     
-    public void sacar(Cliente cliente, BigDecimal valor){
-        cliente.getConta().setSaldo(cliente.getConta().getSaldo().subtract(valor));
-        
-        //cliente.setDataModificacao(LocalDateTime.now());
+    public void sacar(int idConta, BigDecimal valor){
+        removerValor(idConta, valor);
     }
     
-    public void pagar(Cliente cliente, BigDecimal valor, Cliente adm){
-        cliente.getConta().setSaldo(cliente.getConta().getSaldo().subtract(valor));
-        adm.getConta().setSaldo(adm.getConta().getSaldo().add(valor));
-        
-        //cliente.setDataModificacao(LocalDateTime.now());
-        //adm.setDataModificacao(LocalDateTime.now());
+    public void pagar(int idContaOrigem, BigDecimal valor, int idContaDestino){
+        removerValor(idContaOrigem, valor);
+        adicionarValor(idContaDestino, valor);
     }
     
-    public void transferir(Cliente clienteInicial, BigDecimal valor, Cliente clienteFinal){
-        clienteInicial.getConta().setSaldo(clienteInicial.getConta().getSaldo().subtract(valor));
-        clienteFinal.getConta().setSaldo(clienteFinal.getConta().getSaldo().add(valor));
-        
-        //clienteInicial.setDataModificacao(LocalDateTime.now());
-        //clienteFinal.setDataModificacao(LocalDateTime.now());
+    public void transferir(int idContaOrigem, BigDecimal valor, int idContaDestino){
+        removerValor(idContaOrigem, valor);
+        adicionarValor(idContaDestino, valor);
     }
     
     /*public void comprarAtivos(Cliente cliente, Ativos ativo, String numAtivos){
@@ -165,4 +140,94 @@ public class DAOConta {
         }
     }  */
     
+    public void adicionarValor(int idConta, BigDecimal valor){
+        BigDecimal saldo = BigDecimal.valueOf(0.00);
+        
+        String sql = "select saldo from conta where id_conta = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setInt(1, idConta);
+            ResultSet resultQuery;
+            resultQuery = stmt.executeQuery();
+            while (resultQuery.next()) {
+                saldo = BigDecimal.valueOf(resultQuery.getDouble("saldo"));
+            }
+            resultQuery.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        saldo = saldo.add(valor);
+        
+        String sqlAdicionarValor = "update conta set "
+                + "saldo = ?" 
+                + "where id_conta = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sqlAdicionarValor);){
+            stmt.setDouble(1, saldo.doubleValue());
+            stmt.setInt(2, idConta);
+            stmt.execute();
+
+            System.out.println("Valor adicionado com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
+        dataAlteracao(idConta);
+    }
+
+    public void removerValor(int idConta, BigDecimal valor){
+        BigDecimal saldo = BigDecimal.valueOf(0.00);
+        
+        String sql = "select saldo from conta where id_conta = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setInt(1, idConta);
+            ResultSet resultQuery;
+            resultQuery = stmt.executeQuery();
+            while (resultQuery.next()) {
+                saldo = BigDecimal.valueOf(resultQuery.getDouble("saldo"));
+            }
+            resultQuery.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
+        saldo = saldo.subtract(valor);
+        
+        String sqlRmoverValor = "update conta set "
+                + "saldo = ?" 
+                + "where id_conta = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sqlRmoverValor);){
+            stmt.setDouble(1, saldo.doubleValue());
+            stmt.setInt(2, idConta);
+            stmt.execute();
+
+            System.out.println("Valor removido com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
+        dataAlteracao(idConta);
+    }
+    
+    public void adicionarBolsa(){
+        adicionarValor(1, BigDecimal.valueOf(500000.00));
+        dataAlteracao(1);
+    }
+    
+    public void dataAlteracao(int idConta){
+        String sql = "update conta set "
+                + "data_alteracao = ?" 
+                + "where id_conta = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            stmt.setInt(2, idConta);
+            stmt.execute();
+
+            System.out.println("Data atualizada com sucesso.");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

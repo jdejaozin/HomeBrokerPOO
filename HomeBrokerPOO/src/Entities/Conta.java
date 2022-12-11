@@ -40,8 +40,10 @@ public class Conta {
     public LocalDateTime getDataModificacao(){
         return dataModificacao;
     }
-    
-    
+
+    public void setId(int id) {
+        this.id = id;
+    }
     public void setSaldo(BigDecimal saldo){
         this.saldo = saldo;
     }
@@ -98,7 +100,11 @@ public class Conta {
     @Override
     public String toString() {
 
-        return "\nId da conta = " + id + "\nSaldo = " + saldo + "\nConta aberta em = " + dataCriacao + "\nUltima modificação = " + dataModificacao;
+        return "\nId da conta = " + id + 
+                "\nNome do proprietário = " + cliente.getNome() +
+                "\nSaldo = " + saldo + 
+                "\nConta aberta em = " + dataCriacao + 
+                "\nUltima modificação = " + dataModificacao;
     }
     
     
