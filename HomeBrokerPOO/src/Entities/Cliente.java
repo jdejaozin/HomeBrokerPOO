@@ -162,11 +162,11 @@ public class Cliente {
     public String toString() {
         return "\nId do cliente = " + id + 
                 "\nNome = " + nome + 
-                "\nCPF = " + cpf + 
-                "\nEndereço = " + endereco + 
-                "\nTelefone=" + telefone + 
-                "\nUsuário = " + tipoUsuario + 
-                "\nData de criação = " + dataCriacao + 
+                //"\nCPF = " + cpf + 
+                //"\nEndereço = " + endereco + 
+                //"\nTelefone=" + telefone + 
+                //"\nUsuário = " + tipoUsuario + 
+                //"\nData de criação = " + dataCriacao + 
                 "\nÚltima modificação = " + dataModificacao;
     }
 }

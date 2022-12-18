@@ -79,8 +79,6 @@ public class DAOCliente {
                 if(conta != 0){
                     clienteResult.setConta(daoConta.retornarConta(clienteResult));
                 }
-                
-                
                 clientes.add(clienteResult);
             }
             resultQuery.close();
@@ -90,6 +88,7 @@ public class DAOCliente {
         }
         return clientes;
     }
+        
     
     public void criarCliente(String login, String senha, String nome, String cpf, 
             String endereco, String telefone, String tipoUsuario){

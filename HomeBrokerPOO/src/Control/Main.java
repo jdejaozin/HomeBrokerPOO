@@ -71,6 +71,14 @@ public class Main {
                                         break;
                                     }
                                     case 10:{
+                                        GUI.removerOrdem();
+                                        break;
+                                    }
+                                    case 11:{
+                                        GUI.alterarData();
+                                        break;
+                                    }
+                                    case 12:{
                                         break;
                                     }
                                     default: {
@@ -78,16 +86,19 @@ public class Main {
                                         break;
                                     }
                                 }
-                            }while(opAdm != 10);
+                            }while(opAdm != 12);
                             
                         }else{
                             int opComum;
+                            //Cadastrar conta nova
                             if(cliente.getConta() == null){
                                 do{
                                     opComum = GUI.contaLogada(cliente);
                                     switch(opComum){
                                         case 1:{
+                                            
                                             GUI.cadastrarConta(cliente);
+                                            opComum = 2;
                                             break;
                                         }
                                         case 2:{
@@ -97,9 +108,6 @@ public class Main {
                                             JOptionPane.showMessageDialog (null, "Insira um valor válido");
                                             break;
                                         }
-                                    }
-                                    if(cliente.getConta() != null){
-                                        opComum = 2;
                                     }
                                 }while(opComum != 2);
                             }
@@ -125,7 +133,7 @@ public class Main {
                                             break;
                                         }
                                         case 5:{
-                                            //GUI.meusAtivos(cliente);
+                                            GUI.meusAtivos(cliente);
                                             break;
                                         }
                                         case 6:{
@@ -137,10 +145,15 @@ public class Main {
                                             break;
                                         }
                                         case 8:{
-                                            GUI.fecharConta(cliente);
+                                            GUI.ultimaNegociacao(cliente);
                                             break;
                                         }
                                         case 9:{
+                                            GUI.fecharConta(cliente);
+                                            opComum = 10;
+                                            break;
+                                        }
+                                        case 10:{
                                             break;
                                         }
                                         default: {
@@ -148,7 +161,7 @@ public class Main {
                                             break;
                                         }
                                     }
-                                }while(opComum != 9);
+                                }while(opComum != 10);
                             }
                         }
 

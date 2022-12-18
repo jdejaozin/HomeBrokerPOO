@@ -24,6 +24,9 @@ public class Conta {
     public Conta(Cliente cliente){
         this.setCliente(cliente);
     }
+
+    public Conta() {
+    }
     
     public int getId(){
         return id;

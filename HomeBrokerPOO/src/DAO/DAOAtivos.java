@@ -35,10 +35,8 @@ public class DAOAtivos {
         List<Ativos> ativos = new ArrayList<>();
         String sql = "select * from tickers";
         
-        try (PreparedStatement stmt = connection.prepareStatement(sql);){
-
-            ResultSet resultQuery;
-            resultQuery = stmt.executeQuery();
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+                ResultSet resultQuery = stmt.executeQuery()){
 
             while (resultQuery.next()) {
                 int id = resultQuery.getInt("id_ticker");
@@ -62,9 +60,6 @@ public class DAOAtivos {
                 
                 ativos.add(ativoResult);
             }
-            
-            resultQuery.close();
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -91,6 +86,9 @@ public class DAOAtivos {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        
+        daoOrdem.criarOrdem(1, "VENDA", ticker, totalAtivos, "TOTAL", 
+                precoInicial, precoInicial.multiply(BigDecimal.valueOf(totalAtivos)));
     }
     
     public void alterarAtivos(String nomeEmpresa, String ticker, int totalAtivos, BigDecimal precoInicial, int id){
