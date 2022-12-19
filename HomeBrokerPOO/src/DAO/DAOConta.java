@@ -107,7 +107,8 @@ public class DAOConta {
 
                 Conta conta = new Conta();
                 conta.setId(idConta);
-                //setar tbm a busca por id do cliente pra trazer ele aqui e amarrar tudo
+                //conta.setCliente(cliente);
+
                 conta.setSaldo(saldo);
                 conta.setDataCriacao(dataCriacao);
                 conta.setDataModificacao(dataAlteracao);
@@ -199,6 +200,19 @@ public class DAOConta {
         return op;
     }
     
+    public boolean comprarAtivosOrdem0(Cliente cliente, Ordem ativo, int numAtivos){
+        
+        if(numAtivos <= 3){
+            boolean op = removerValor(cliente.getConta().getId(), 
+                    ativo.getValor().multiply(BigDecimal.valueOf(numAtivos)).multiply(BigDecimal.valueOf(0.9)));
+
+            return op;           
+        } else{
+            System.out.println("O numero de ativos deve ser menor que 3");
+            return false;
+        }
+    }
+    
     /*public void venderAtivos(Cliente cliente, BigDecimal novoValor, Ativos ativoEscolhido){
         for(int i = 0; i < cliente.getConta().getAtivos().length; i++){
             if(cliente.getConta().getAtivos()[i] != null){
@@ -209,21 +223,7 @@ public class DAOConta {
                 }
             }
         }
-    }
-    
-    public void pagarDividendos(Cliente[] cliente){
-        for(Cliente temp : cliente){
-            if(temp != null){
-                if(temp.getConta().getAtivos() != null){
-                    for(int i = 0; i < temp.getConta().getAtivos().length; i++){
-                        if(temp.getConta().getAtivos()[i] != null){
-                            temp.getConta().setSaldo(temp.getConta().getSaldo().add(temp.getConta().getAtivos()[i].getPrecoInicial()));
-                        }
-                    }
-                }
-            }
-        }
-    }  */
+    }*/
     
     public void adicionarValor(int idConta, BigDecimal valor){
         BigDecimal saldo = BigDecimal.valueOf(0.00);

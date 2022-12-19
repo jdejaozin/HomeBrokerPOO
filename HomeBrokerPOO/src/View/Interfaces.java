@@ -74,6 +74,7 @@ public class Interfaces {
         builder.append("HOME BROKER JJ");
         builder.append("\nOlá " + cliente.getNome());
         builder.append("\nTipo de cliente: " + cliente.getTipoUsuario());
+        builder.append("\n" + DataControl.now());
         builder.append("\nOpções");
         builder.append("\n---------------------------");
         if(cliente.getTipoUsuario() == Usuario.ADM){
@@ -195,7 +196,7 @@ public class Interfaces {
     }
     
     public void pagarDividendos(Cliente cliente){
-
+        List<Ordem> ordens = daoOrdem.listaOrdem();
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
         builder.append("\n| Pagamento de dividendos |");
@@ -203,13 +204,21 @@ public class Interfaces {
         builder.append("\nInsira o ticker do dividendo que deseja pagar: ");
         String ticker = JOptionPane.showInputDialog(builder);
         builder.append(ticker);
+        builder.append("\nContas que possuem ativo selecionado: | ");
+        for(Ordem ordem : ordens){
+            if(ordem.getTicker().equals(ticker) && ordem.getQuantidade() > 0){
+                builder.append(ordem.getConta().getId() + " | ");
+            }
+        }
         builder.append("\nValor do dividendo: ");
         BigDecimal valorDividendo = new BigDecimal(JOptionPane.showInputDialog(builder));
         builder.append(valorDividendo);
+        builder.append("\nId da conta que deseja pagar: ");
+        int idConta = Integer.parseInt(JOptionPane.showInputDialog(builder));
         builder.append("\nDeseja executar agora o pagamento de dividendos?");
         int yesNo = JOptionPane.showConfirmDialog (null,"\nDeseja executar agora o pagamento de dividendos?", "HOME BROKER JJ", JOptionPane.YES_NO_OPTION);
         if(yesNo == 0){
-            daoOrdem.pagarDividendos(ticker, valorDividendo);
+            daoOrdem.pagarDividendos(ticker, valorDividendo, idConta);
         }
     }
     
@@ -283,7 +292,7 @@ public class Interfaces {
         builder.delete(0, builder.length());
         builder.append("HOME BROKER JJ");
         builder.append("\n| Alteração de data |");
-        builder.append("Data atual: ");
+        builder.append("\nData atual: ");
         builder.append(DataControl.now());
         builder.append("\n---------------------------");
         builder.append("\nInsira quantos dias deseja passar: ");
@@ -446,9 +455,11 @@ public class Interfaces {
             builder.append("\n---------------------------");
             for(Ordem ordem : ordens){
                 if(ordem.getConta().getId() == cliente.getConta().getId()){
-                    if(ordem.getTipoOrdem() == TipoOrdem.COMPRA){
-                        builder.append("\n" + ordem);
-                        builder.append("\n");
+                    if(ordem.getTipoOrdem() == TipoOrdem.COMPRA || ordem.getTipoOrdem() == TipoOrdem.ORDEM0){
+                        if(ordem.getQuantidade() > 0){
+                            builder.append("\n" + ordem);
+                            builder.append("\n");
+                        }
                     }
                 }
             }
@@ -504,7 +515,8 @@ public class Interfaces {
                 }
             }
             builder.append("\n1- Comprar ativos");
-            builder.append("\n2- Sair");
+            builder.append("\n2- Comprar ativos(Ordem 0)");
+            builder.append("\n3- Sair");
             op = Integer.parseInt(JOptionPane.showInputDialog(builder));
             switch(op){
                 case 1:{
@@ -525,13 +537,31 @@ public class Interfaces {
                     break;
                 }
                 case 2:{
+                    builder.append("\nInsira o ID do ativo que deseja comprar: ");
+                    int ativoId = Integer.parseInt(JOptionPane.showInputDialog(builder));
+                    for(Ordem ativo: ativos){
+                        if(ativo.getId() == ativoId){
+                            ativoEscolhido = ativo;
+                            break;
+                        }
+                    }
+                    builder.append(ativoId);
+                    builder.append("\nQuantos ativos deseja comprar (maximo 3): ");
+                    int numAtivo = Integer.parseInt(JOptionPane.showInputDialog(builder));
+                    builder.append(numAtivo);
+                    //metodo de comprar ativo ordem 0
+                    daoOrdem.comprarAtivoOrdem0(cliente, ativoEscolhido, numAtivo);
+                    break;
+                    
+                }
+                case 3:{
                     break;
                 }
                 default:{
                     JOptionPane.showMessageDialog (null, "Insira um valor válido");
                 }
             }
-        }while(op != 2);
+        }while(op != 3);
     }
     
     public void listaClientes(){

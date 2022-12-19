@@ -3,11 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/Connection/ConnectionFactory.java</file>
-            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/Control/Main.java</file>
-            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/View/Interfaces.java</file>
-            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/DAO/DAOUltimaNegociacao.java</file>
-            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/Entities/UltimaNegociacao.java</file>
+            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main%20(1)/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/View/Interfaces.java</file>
+            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main%20(1)/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/DAO/DAOConta.java</file>
+            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main%20(1)/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/DAO/DAOOrdem.java</file>
+            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main%20(1)/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/DAO/DataControl.java</file>
+            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main%20(1)/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/Connection/ConnectionFactory.java</file>
+            <file>file:/C:/Users/jp_te/Downloads/HomeBrokerPOO-main%20(1)/HomeBrokerPOO-main/HomeBrokerPOO/HomeBrokerPOO/src/Control/Main.java</file>
         </group>
     </open-files>
 </project-private>

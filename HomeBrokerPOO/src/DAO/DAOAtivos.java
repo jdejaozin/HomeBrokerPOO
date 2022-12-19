@@ -7,6 +7,7 @@ package DAO;
 
 import Connection.ConnectionFactory;
 import Entities.Ativos;
+import Entities.Cliente;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 public class DAOAtivos {
     
+    private DAOConta daoConta = new DAOConta();
     private DAOOrdem daoOrdem = new DAOOrdem();
     private Connection connection = null;
     
@@ -124,4 +126,5 @@ public class DAOAtivos {
             throw new RuntimeException(e);
         }
     }
+    
 }

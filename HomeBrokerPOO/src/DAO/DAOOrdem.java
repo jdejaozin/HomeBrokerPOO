@@ -64,6 +64,49 @@ public class DAOOrdem {
         }
     }
     
+    public Ordem buscaOrdemPorId(int id) {
+        String sql = "select * from ordem where id = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql);){
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                int idOrdem = rs.getInt("id");
+                int idConta = rs.getInt("id_conta");
+                String tipoOrdem = rs.getString("tipo_ordem");
+                String ticker = rs.getString("ticker");
+                int quantidade = rs.getInt("quantidade");
+                String estado = rs.getString("estado");
+                BigDecimal valor = BigDecimal.valueOf(rs.getDouble("valor"));
+                BigDecimal valorTotal = BigDecimal.valueOf(rs.getDouble("valor_total"));
+                
+                
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss.S");
+                LocalDateTime dataCriacao = LocalDateTime.parse(rs.getTimestamp("data_criacao").toString(), formatter);
+                LocalDateTime dataAlteracao = LocalDateTime.parse(rs.getTimestamp("data_alteracao").toString(), formatter);
+
+                Ordem ordem = new Ordem();
+                ordem.setId(idOrdem);
+                ordem.setConta(daoConta.buscarContaPorId(idConta));
+                ordem.setTipoOrdem(TipoOrdem.valueOf(tipoOrdem));
+                ordem.setTicker(ticker);
+                ordem.setQuantidade(quantidade);
+                ordem.setEstado(Estado.valueOf(estado));
+                ordem.setValor(valor);
+                ordem.setValorTotal(valorTotal);
+                ordem.setDataCriacao(dataCriacao);
+                ordem.setDataModificacao(dataAlteracao);
+
+                return ordem;
+            }
+            rs.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+    
     public List<Ordem> listaOrdem(){
         List<Ordem> ordens = new ArrayList<>();
         
@@ -119,11 +162,33 @@ public class DAOOrdem {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }    
+    
+    public void comprarAtivoOrdem0(Cliente cliente, Ordem ativoEscolhido, int numAtivo){
+        boolean operacao = daoConta.comprarAtivosOrdem0(cliente, ativoEscolhido, numAtivo);
+        if(operacao){
+            criarOrdem(cliente.getConta().getId(), "ORDEM0", ativoEscolhido.getTicker(),
+                    numAtivo, "TOTAL", ativoEscolhido.getValor(), ativoEscolhido.getValor().multiply(BigDecimal.valueOf(numAtivo).multiply(BigDecimal.valueOf(0.9))));
+                alteraOrdem(ativoEscolhido, ativoEscolhido.getQuantidade() - numAtivo);
+        }else{
+            criarOrdem(cliente.getConta().getId(), "ORDEM0", ativoEscolhido.getTicker(),
+                numAtivo, "NAO", ativoEscolhido.getValor(), ativoEscolhido.getValor().multiply(BigDecimal.valueOf(numAtivo).multiply(BigDecimal.valueOf(0.9))));
+            alteraOrdem(ativoEscolhido, ativoEscolhido.getQuantidade() - numAtivo);
+        }
     }
-
+    
     public void comprarAtivo(Cliente cliente, Ordem ativoEscolhido, int numAtivo){
+        List<Ordem> ordens = listaOrdem();
+        
+        for(Ordem ordem : ordens){
+            if(ordem.getConta().getId() == cliente.getConta().getId()){
+                
+            }
+        }
+        
         boolean operacao = daoConta.comprarAtivos(cliente, ativoEscolhido, numAtivo);
         if(operacao){
+            //ja cria a ordem e ja compra o ativo
             if(numAtivo > ativoEscolhido.getQuantidade()){
                 criarOrdem(cliente.getConta().getId(), "COMPRA", ativoEscolhido.getTicker(),
                     numAtivo, "PARCIAL", ativoEscolhido.getValor(), ativoEscolhido.getValorTotal());
@@ -138,6 +203,8 @@ public class DAOOrdem {
                 numAtivo, "NAO", ativoEscolhido.getValor(), ativoEscolhido.getValor().multiply(BigDecimal.valueOf(numAtivo)));
             alteraOrdem(ativoEscolhido, ativoEscolhido.getQuantidade() - numAtivo);
         }
+        
+        
         
         /*if(ordem0(cliente, ativo)){
             if(numAtivo == 1){
@@ -225,17 +292,17 @@ public class DAOOrdem {
         alteraOrdem(ativo, ativo.getQuantidade() - numAtivo);
     }
     
-    public void pagarDividendos(String ticker, BigDecimal valorDividendo){
+    public void pagarDividendos(String ticker, BigDecimal valorDividendo, int idConta){
         List<Ordem> ordens = listaOrdem();
         
         for(Ordem ordem : ordens){
             if(ordem.getTicker().equals(ticker)){
                 int quant = ordem.getQuantidade();
                 Conta conta = ordem.getConta();
-                if(conta.getId() != 1){
+                if(conta.getId() == idConta){
                     boolean op = daoConta.removerValor(1, valorDividendo.multiply(BigDecimal.valueOf(quant)));
                     if(op)
-                        daoConta.adicionarValor(conta.getId(), valorDividendo.multiply(BigDecimal.valueOf(quant)));
+                        daoConta.adicionarValor(idConta, valorDividendo.multiply(BigDecimal.valueOf(quant)));
                 }
             }
         }
