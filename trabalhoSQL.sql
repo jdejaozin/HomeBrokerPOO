@@ -144,4 +144,16 @@ create table ultima_negociacao(
     PRIMARY KEY (id)
 );
 
-drop table ultima_negociacao;
+CREATE TABLE `trabalho`.`ordem_execucao` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `quantidade` INT NOT NULL,
+  `id_conta_compra` INT NULL,
+  `id_conta_vende` INT NULL,
+  `id_ordem` INT NOT NULL,
+  `data_alteracao` DATETIME NOT NULL,
+  `data_criacao` DATETIME NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+-- drop table ultima_negociacao;
